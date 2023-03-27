@@ -1,7 +1,7 @@
 {
     "AuthorizationConfig": {
         "BaseOrganizationUrl": "https://api.asgardeo.io/t/flutterconnect",
-        "ClientId": "nk3znHSnRyyHZJfwlJOH8GBJuDoa",
+        "ClientId": "WkvjPecCHwNz6AagZa0WSHsuPpEa",
         "Scopes": [
             "openid",
             "email",
@@ -9,5 +9,5 @@
             "internal_login"
         ]
     },
-    "LoginCallbackUrl": "com.wso2.kfone.admin_app://login-callback"
+    "LoginCallbackUrl": "com.wso2.kfone.admin.app://login-callback"
 }

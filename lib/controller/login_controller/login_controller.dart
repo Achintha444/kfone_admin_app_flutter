@@ -5,8 +5,6 @@ import "../../util/authorization_config_util.dart";
 import "../../util/controller_util/login_controller/login_controller_util.dart";
 import "../controller.dart";
 
-
-
 class LoginController extends Controller {
   static final FlutterAppAuth _flutterAppAuth =
       LoginControllerUtil.getFlutterAppAuthObject();
@@ -37,7 +35,6 @@ class LoginController extends Controller {
       throw Exception("Failed to login");
     }
   }
-
 
   /// logout function
   static Future<EndSessionResponse?> logoutAction(

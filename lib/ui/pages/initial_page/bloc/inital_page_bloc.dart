@@ -19,8 +19,7 @@ class InitalPageBloc extends Bloc<InitalPageEvent, InitalPageState> {
                   response as AuthorizationTokenResponse,
             ),
           ))
-        .catchError((err) => emit(SigninFail()));
+      .catchError((err) => emit(SigninFail()));
     });
-
   }
 }

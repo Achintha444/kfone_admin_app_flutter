@@ -54,7 +54,7 @@
          <string>Editor</string>
          <key>CFBundleURLSchemes</key>
          <array>
-            <string>com.wso2.kfone.admin_app</string>
+            <string>com.wso2.kfone.admin.app</string>
          </array>
       </dict>
    </array>
