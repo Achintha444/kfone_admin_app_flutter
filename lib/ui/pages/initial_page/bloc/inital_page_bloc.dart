@@ -21,17 +21,19 @@ class InitalPageBloc extends Bloc<InitalPageEvent, InitalPageState> {
               await SecureStorageController.storeToken(
                 response as AuthorizationTokenResponse,
               )
-              .then(
+                  .then(
                 (value) => emit(
                   SigninSuccess(
                     sessionToken: SessionToken(
                       accessToken: response.accessToken,
                       idToken: response.idToken,
+                      accessTokenExpirationDateTime:
+                          response.accessTokenExpirationDateTime,
                     ),
                   ),
                 ),
               )
-              .catchError(
+                  .catchError(
                 (err) {
                   emit(SigninFail());
                 },
@@ -54,12 +56,31 @@ class InitalPageBloc extends Bloc<InitalPageEvent, InitalPageState> {
       final String? accessToken =
           await SecureStorageController.getAccessToken();
       final String? idToken = await SecureStorageController.getIdToken();
+      final String? accessTokenExpirationDateTimeString 
+        = await SecureStorageController.getAccessTokenExpirationDateTime();
 
-      if (accessToken is String && idToken is String) {
-        emit(SigninSuccess(
-            sessionToken:
-                SessionToken(accessToken: accessToken, idToken: idToken)));
+      if (accessToken != null && idToken != null && accessTokenExpirationDateTimeString != null) {
+        bool isAccessTokenExpired = await SecureStorageController.isAccessTokenExpired();
+        if(isAccessTokenExpired) {
+          await SecureStorageController.clearLocalStorage()
+            .then((value) => emit(Initial()))
+            .catchError((err) => emit(Initial()));
+          
+          return;
+        }
+
+        // emit the success state if the locally stored access token is valid
+        emit(
+          SigninSuccess(
+            sessionToken: SessionToken(
+              accessToken: accessToken,
+              idToken: idToken,
+              accessTokenExpirationDateTime: DateTime.parse(accessTokenExpirationDateTimeString)
+            ),
+          ),
+        );
         return;
+
       }
 
       emit(Initial());

@@ -57,7 +57,7 @@ abstract class AuthorizationConfigUtil {
     return "$baseUrl/oidc/logout";
   }
 
-  /// get the access token from the `AuthorizationTokenResponse`
+  /// get the access token from the `SessionToken`
   static String getAccessToken(
       SessionToken sessionToken) {
     String? accessToken = sessionToken.accessToken;
@@ -69,7 +69,7 @@ abstract class AuthorizationConfigUtil {
     return accessToken;
   }
 
-  /// get the ID token from the `AuthorizationTokenResponse`
+  /// get the ID token from the `SessionToken`
   static String getIdToken(
       SessionToken sessionToken) {
     String? idToken = sessionToken.idToken;
@@ -79,6 +79,19 @@ abstract class AuthorizationConfigUtil {
     }
 
     return idToken;
+  }
+
+  /// get the access token expiration date time from the `SessionToken`
+  static DateTime getAccessTokenExpirationDateTime(
+      SessionToken sessionToken) {
+    DateTime? accessTokenExpirationDateTime =
+        sessionToken.accessTokenExpirationDateTime;
+
+    if (accessTokenExpirationDateTime == null) {
+      return DateTime.now();
+    }
+
+    return accessTokenExpirationDateTime;
   }
 
   /// get the local storage key to locally store the access token
@@ -93,5 +106,12 @@ abstract class AuthorizationConfigUtil {
     final Map<String, dynamic> configJson = await _readConfigJson();
 
     return configJson["LocalStoreKey"]["IdToken"];
+  }
+
+  /// get the local storage key to locally store the access token expiration date time
+  static Future<String> getLocalStorageKeyAccessTokenExpirationDateTime() async{
+    final Map<String, dynamic> configJson = await _readConfigJson();
+
+    return configJson["LocalStoreKey"]["AccessTokenExpirationDateTime"];
   }
 }

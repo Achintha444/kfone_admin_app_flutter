@@ -48,6 +48,39 @@ class SecureStorageController extends Controller {
     }
   }
 
+  /// get the access token expiration date time
+  static Future<String?> getAccessTokenExpirationDateTime() async {
+    String localStorageKeyAccessTokenExpirationDateTime 
+      = await AuthorizationConfigUtil.getLocalStorageKeyAccessTokenExpirationDateTime();
+  DateTime.now();
+    try {
+      return _flutterSecureStorage.read(key: localStorageKeyAccessTokenExpirationDateTime);
+    } catch (e) {
+      throw Exception('Failed to get the access token expiration date time');
+    }
+  }
+
+  /// check if the access token is expired
+  static Future<bool> isAccessTokenExpired() async {
+    String localStorageKeyAccessTokenExpirationDateTime 
+      = await AuthorizationConfigUtil.getLocalStorageKeyAccessTokenExpirationDateTime();
+
+    try {
+      String? accessTokenExpirationDateTimeString 
+        = await _flutterSecureStorage.read(key: localStorageKeyAccessTokenExpirationDateTime);
+
+      if (accessTokenExpirationDateTimeString == null) {
+        return true;
+      }
+
+      DateTime accessTokenExpirationDateTime = DateTime.parse(accessTokenExpirationDateTimeString);
+
+      return DateTime.now().isAfter(accessTokenExpirationDateTime);
+    } catch (e) {
+      throw Exception('Failed to check if the access token is expired');
+    }
+  }
+
   /// clear local storage
   static Future<void> clearLocalStorage() async {
     try {
