@@ -8,5 +8,6 @@
             "profile",
             "internal_login"
         ]
-    }
+    },
+    "LoginCallbackUrl": "com.wso2.kfone.admin_app://login-callback"
 }

@@ -5,7 +5,7 @@ ThemeData themeData = ThemeData(
   primarySwatch: Colors.red,
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ButtonStyle(
-      backgroundColor: MaterialStateProperty.all<Color>(Colors.redAccent),
+      backgroundColor: MaterialStateProperty.all<Color>(Colors.red),
       foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
       textStyle: MaterialStateProperty.all<TextStyle>(
         const TextStyle(
@@ -25,5 +25,9 @@ ThemeData themeData = ThemeData(
       fontSize: 18,
     ),
     
+  ),
+  buttonTheme: const ButtonThemeData(
+    buttonColor: Colors.red,
+    textTheme: ButtonTextTheme.primary,
   ),
 );
