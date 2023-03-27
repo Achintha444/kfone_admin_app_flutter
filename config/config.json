@@ -1,0 +1,12 @@
+{
+    "AuthorizationConfig": {
+        "BaseOrganizationUrl": "https://api.asgardeo.io/t/flutterconnect",
+        "ClientId": "nk3znHSnRyyHZJfwlJOH8GBJuDoa",
+        "Scopes": [
+            "openid",
+            "email",
+            "profile",
+            "internal_login"
+        ]
+    }
+}
