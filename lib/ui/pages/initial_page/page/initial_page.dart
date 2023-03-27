@@ -48,7 +48,10 @@ class InitialPage extends StatelessWidget {
 
   BlocProvider<InitalPageBloc> _buildBody(BuildContext context) {
     return BlocProvider(
-      create: (context) => InitalPageBloc(),
+      create: (context) => InitalPageBloc()
+        ..add(
+          InitialSignin(),
+        ),
       child: BlocListener<InitalPageBloc, InitalPageState>(
         listener: (context, state) {
           if (state is SigninFail) {
@@ -58,7 +61,7 @@ class InitialPage extends StatelessWidget {
           } else if (state is SigninSuccess) {
             Navigator.pushNamed(context, AccountPage.routeName,
                 arguments:
-                    AccountPageArguments(state.authorizationTokenResponse));
+                    AccountPageArguments(state.sessionToken));
           }
         },
         child: BlocBuilder<InitalPageBloc, InitalPageState>(

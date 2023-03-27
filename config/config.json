@@ -9,5 +9,9 @@
             "internal_login"
         ]
     },
-    "LoginCallbackUrl": "com.wso2.kfone.admin.app://login-callback"
+    "LoginCallbackUrl": "com.wso2.kfone.admin.app://login-callback",
+    "LocalStoreKey": {
+        "AccessToken": "com.wso2.kfone.admin.app_access_token",
+        "IdToken": "com.wso2.kfone.admin.app_id_token"
+    }
 }

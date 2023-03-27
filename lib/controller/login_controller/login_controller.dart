@@ -1,5 +1,6 @@
 import "dart:developer";
 import "package:flutter_appauth/flutter_appauth.dart";
+import "package:kfone_admin_app_flutter/util/model/session_token.dart";
 
 import "../../util/authorization_config_util.dart";
 import "../../util/controller_util/login_controller/login_controller_util.dart";
@@ -38,7 +39,7 @@ class LoginController extends Controller {
 
   /// logout function
   static Future<EndSessionResponse?> logoutAction(
-      AuthorizationTokenResponse authorizationTokenResponse) async {
+      SessionToken sessionToken) async {
     final String discoveryUrl = await AuthorizationConfigUtil.getDiscoveryUrl();
     final String redirectUrl = await AuthorizationConfigUtil.getRedirectUrl();
 
@@ -46,7 +47,7 @@ class LoginController extends Controller {
       final EndSessionResponse? result = await _flutterAppAuth.endSession(
         EndSessionRequest(
           idTokenHint:
-              AuthorizationConfigUtil.getIdToken(authorizationTokenResponse),
+              AuthorizationConfigUtil.getIdToken(sessionToken),
           postLogoutRedirectUrl: redirectUrl,
           discoveryUrl: discoveryUrl,
         ),

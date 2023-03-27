@@ -12,12 +12,12 @@ class Initial extends InitalPageState {}
 class Loading extends InitalPageState {}
 
 class SigninSuccess extends InitalPageState {
-  final AuthorizationTokenResponse authorizationTokenResponse;
+  final SessionToken sessionToken;
 
-  const SigninSuccess({required this.authorizationTokenResponse});
+  const SigninSuccess({required this.sessionToken});
 
    @override
-  List<Object> get props => [authorizationTokenResponse];
+  List<Object> get props => [sessionToken];
 }
 
 class SigninFail extends InitalPageState {}

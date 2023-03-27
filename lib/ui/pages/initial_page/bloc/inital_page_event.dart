@@ -8,3 +8,6 @@ abstract class InitalPageEvent extends Equatable {
 }
 
 class Signin extends InitalPageEvent {}
+
+// Use the locally saved token to sign in
+class InitialSignin extends InitalPageEvent {}

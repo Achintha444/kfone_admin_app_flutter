@@ -8,19 +8,19 @@ abstract class AccountPageEvent extends Equatable {
 }
 
 class GetUserInfo extends AccountPageEvent {
-  final AuthorizationTokenResponse authorizationTokenResponse;
+  final SessionToken sessionToken;
 
-  const GetUserInfo({required this.authorizationTokenResponse});
+  const GetUserInfo({required this.sessionToken});
 
   @override
-  List<Object> get props => [authorizationTokenResponse];
+  List<Object> get props => [sessionToken];
 }
 
 class Signout extends AccountPageEvent {
-  final AuthorizationTokenResponse authorizationTokenResponse;
+  final SessionToken sessionToken;
 
-  const Signout({required this.authorizationTokenResponse});
+  const Signout({required this.sessionToken});
 
   @override
-  List<Object> get props => [authorizationTokenResponse];
+  List<Object> get props => [sessionToken];
 }

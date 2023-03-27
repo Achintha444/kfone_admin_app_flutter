@@ -1,0 +1,59 @@
+
+import 'package:flutter_appauth/flutter_appauth.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+import '../../util/authorization_config_util.dart';
+import '../../util/controller_util/secure_storage_controller/secure_storage_controller_util.dart';
+import '../controller.dart';
+
+class SecureStorageController extends Controller {
+
+  static final FlutterSecureStorage _flutterSecureStorage = SecureStorageControllerUtil.getFlutterSecureStorage();
+
+  /// store the access token and id token
+  static Future<bool> storeToken(AuthorizationTokenResponse authorizationTokenResponse) async {
+
+    String localStorageKeyAccessToken = await AuthorizationConfigUtil.getLocalStorageKeyAccessToken();
+    String localStorageKeyIdToken = await AuthorizationConfigUtil.getLocalStorageKeyIdToken();
+
+    try {
+      await _flutterSecureStorage.write(key: localStorageKeyAccessToken, value: authorizationTokenResponse.accessToken);
+      await _flutterSecureStorage.write(key: localStorageKeyIdToken, value: authorizationTokenResponse.idToken);
+
+      return true;
+    } catch (e) {
+      throw Exception('Failed to save the authorization values');
+    }
+  }
+
+  /// get the access token
+  static Future<String?> getAccessToken() async {
+    String localStorageKeyAccessToken = await AuthorizationConfigUtil.getLocalStorageKeyAccessToken();
+
+    try {
+      return _flutterSecureStorage.read(key: localStorageKeyAccessToken);
+    } catch (e) {
+      throw Exception('Failed to get the access token');
+    }
+  }
+
+  /// get the id token
+  static Future<String?> getIdToken() async {
+    String localStorageKeyIdToken = await AuthorizationConfigUtil.getLocalStorageKeyIdToken();
+
+    try {
+      return _flutterSecureStorage.read(key: localStorageKeyIdToken);
+    } catch (e) {
+      throw Exception('Failed to get the id token');
+    }
+  }
+
+  /// clear local storage
+  static Future<void> clearLocalStorage() async {
+    try {
+      await _flutterSecureStorage.deleteAll();
+    } catch (e) {
+      throw Exception('Failed to clear local storage');
+    }
+  }
+}

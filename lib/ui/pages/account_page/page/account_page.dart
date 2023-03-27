@@ -21,13 +21,7 @@ class AccountPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Column(
-          children: [
-            const Text("Account"),
-            const SizedBox(height: 2),
-            const Text("Account")
-          ],
-        ),
+        title: const Text("Account"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -48,7 +42,7 @@ class AccountPage extends StatelessWidget {
       create: (context) => AccountPageBloc()
         ..add(
           GetUserInfo(
-            authorizationTokenResponse: args.authorizationTokenResponse,
+            sessionToken: args.sessionToken,
           ),
         ),
       child: BlocListener<AccountPageBloc, AccountPageState>(
@@ -79,11 +73,11 @@ class AccountPage extends StatelessWidget {
             } else if (state is UserInfoSucess) {
               return Profile(
                 user: state.user,
-                authorizationTokenResponse: args.authorizationTokenResponse,
+                sessionToken: args.sessionToken,
               );
             } else {
               return ProfileError(
-                authorizationTokenResponse: args.authorizationTokenResponse,
+                sessionToken: args.sessionToken,
               );
             }
           },

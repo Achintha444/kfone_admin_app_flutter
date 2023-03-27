@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kfone_admin_app_flutter/controller/secure_storage_controller/secure_storage_controller.dart';
+import 'package:kfone_admin_app_flutter/util/model/session_token.dart';
 
 import '../../../../controller/login_controller/login_controller.dart';
 import '../../../../controller/user_details_controller/user_details_controller.dart';
@@ -14,16 +15,26 @@ class AccountPageBloc extends Bloc<AccountPageEvent, AccountPageState> {
     on<GetUserInfo>((event, emit) async {
       emit(Loading());
 
-      await UserDetailsController.getUserDetails(event.authorizationTokenResponse).then(
-        (value) => emit(UserInfoSucess(user: value)),
-      ).catchError((err) => emit(UserInfoFail()));
+      await UserDetailsController.getUserDetails(event.sessionToken)
+          .then(
+            (value) => emit(UserInfoSucess(user: value)),
+          )
+          .catchError((err) => emit(UserInfoFail()));
     });
     on<Signout>((event, emit) async {
       emit(Loading());
 
-      await LoginController.logoutAction(event.authorizationTokenResponse).then(
-        (value) => emit(SignoutSuccess()),
-      ).catchError((err) => emit(SignoutFail()));
+      await SecureStorageController.clearLocalStorage().then(
+        (value) async {
+          await LoginController.logoutAction(event.sessionToken)
+              .then(
+                (value) => emit(SignoutSuccess()),
+              )
+              .catchError((err) => emit(SignoutFail()));
+        },
+      ).catchError((err) {
+        emit(SignoutFail());
+      });
     });
   }
 }

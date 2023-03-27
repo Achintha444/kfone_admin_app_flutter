@@ -1,6 +1,6 @@
 
-import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:http/http.dart';
+import 'package:kfone_admin_app_flutter/util/model/session_token.dart';
 
 import '../../model/user.dart';
 import '../../util/authorization_config_util.dart';
@@ -11,9 +11,9 @@ import '../controller.dart';
 class UserDetailsController extends Controller {
 
   /// get user details about the logged in user
-  static Future<User> getUserDetails(AuthorizationTokenResponse authorizationTokenResponse) async {
+  static Future<User> getUserDetails(SessionToken sessionToken) async {
     String userinfoUrl = await UserDetailsControllerUtil.getUserIntoUrl();
-    String accessToken = AuthorizationConfigUtil.getAccessToken(authorizationTokenResponse);
+    String accessToken = AuthorizationConfigUtil.getAccessToken(sessionToken);
 
     final Response response = await Common.getCall(accessToken, userinfoUrl);
 

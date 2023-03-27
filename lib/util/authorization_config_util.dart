@@ -1,6 +1,6 @@
 
 import 'package:flutter/services.dart';
-import 'package:flutter_appauth/flutter_appauth.dart';
+import 'package:kfone_admin_app_flutter/util/model/session_token.dart';
 
 import './common.dart';
 
@@ -59,8 +59,8 @@ abstract class AuthorizationConfigUtil {
 
   /// get the access token from the `AuthorizationTokenResponse`
   static String getAccessToken(
-      AuthorizationTokenResponse authorizationTokenResponse) {
-    String? accessToken = authorizationTokenResponse.accessToken;
+      SessionToken sessionToken) {
+    String? accessToken = sessionToken.accessToken;
 
     if (accessToken == null) {
       return "";
@@ -71,13 +71,27 @@ abstract class AuthorizationConfigUtil {
 
   /// get the ID token from the `AuthorizationTokenResponse`
   static String getIdToken(
-      AuthorizationTokenResponse authorizationTokenResponse) {
-    String? idToken = authorizationTokenResponse.idToken;
+      SessionToken sessionToken) {
+    String? idToken = sessionToken.idToken;
 
     if (idToken == null) {
       return "";
     }
 
     return idToken;
+  }
+
+  /// get the local storage key to locally store the access token
+  static Future<String> getLocalStorageKeyAccessToken() async{
+    final Map<String, dynamic> configJson = await _readConfigJson();
+
+    return configJson["LocalStoreKey"]["AccessToken"];
+  }
+
+  /// get the local storage key to locally store the id token
+  static Future<String> getLocalStorageKeyIdToken() async{
+    final Map<String, dynamic> configJson = await _readConfigJson();
+
+    return configJson["LocalStoreKey"]["IdToken"];
   }
 }

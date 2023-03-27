@@ -1,7 +1,7 @@
-import 'package:flutter_appauth/flutter_appauth.dart';
+import 'package:kfone_admin_app_flutter/util/model/session_token.dart';
 
 class AccountPageArguments {
-  final AuthorizationTokenResponse authorizationTokenResponse;
+  final SessionToken sessionToken;
 
-  AccountPageArguments(this.authorizationTokenResponse);
+  AccountPageArguments(this.sessionToken);
 }

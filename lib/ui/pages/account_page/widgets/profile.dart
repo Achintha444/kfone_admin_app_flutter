@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_appauth/flutter_appauth.dart';
+import 'package:kfone_admin_app_flutter/util/model/session_token.dart';
 
 import '../../../../model/user.dart';
 import 'profile_parameter.dart';
@@ -8,12 +8,12 @@ import 'signout_button.dart';
 
 class Profile extends StatelessWidget {
   final User user;
-  final AuthorizationTokenResponse authorizationTokenResponse;
+  final SessionToken sessionToken;
 
   const Profile({
     Key? key,
     required this.user,
-    required this.authorizationTokenResponse,
+    required this.sessionToken,
   }) : super(key: key);
 
   @override
@@ -38,7 +38,7 @@ class Profile extends StatelessWidget {
         ),
         const SizedBox(height: 50),
         SignoutButton(
-          authorizationTokenResponse: authorizationTokenResponse,
+          sessionToken: sessionToken,
         ),
         const Spacer(),
       ],
