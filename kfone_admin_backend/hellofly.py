@@ -208,7 +208,8 @@ def search_device_by_name(device_name):
 @authorize(required_scopes=['devices_add'])
 def add_device():
     device_data = request.get_json()
-    device_id = len(devices) + 1
+    # generate a uuid for the device as a string
+    device_id = f'{uuid.uuid1()}'
     if 'name' not in device_data or 'image_uri' not in device_data or 'qty' not in device_data or \
             'description' not in device_data or 'price' not in device_data:
         return jsonify({'message': 'Missing required fields'}), 400
@@ -411,5 +412,5 @@ def jwk_to_public_key(jwk):
 
     return pem
 
-# if __name__ == '__main__':
-#     app.run(port=3000)
+if __name__ == '__main__':
+    app.run(port=3000)
