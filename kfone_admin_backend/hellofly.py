@@ -1,3 +1,4 @@
+import time
 import uuid
 
 from flask import Flask
@@ -18,6 +19,9 @@ app = Flask(__name__)
 
 JWKS_URL = 'https://api.asgardeo.io/t/kfonebusiness/oauth2/jwks'
 AUD = "obioKxDGAAxKeSlXrtnDBEWdkWYa"
+ADMIN_CLIENT_ID = "dcVj3Rg8kgO8JBr7pj656qvHmpEa"
+ADMIN_CLIENT_SECRET = "3SAUmmtCC4W_15yMewpSdjP883oa"
+ACCESS_TOKEN = {}
 
 
 # Device model
@@ -83,9 +87,12 @@ class PromotionEncoder(json.JSONEncoder):
 # ]
 
 devices = OrderedDict({
-    "c9912c06-0a57-4812-89cb-8322c90fb3e5" : Device("c9912c06-0a57-4812-89cb-8322c90fb3e5", 'iPhone 14 Pro Max', 'image1.png', 15, 'Description 1', 100, [1, 2]),
-    "d4e2c72a-1785-454b-ae90-4796859f85d4": Device("d4e2c72a-1785-454b-ae90-4796859f85d4", 'Samsung Galaxy S22 Ultra', 'image2.png', 5, 'Description 2', 200, [2, 3]),
-    "8c4dd076-e817-4969-a4fa-e33a28023d83": Device("8c4dd076-e817-4969-a4fa-e33a28023d83", 'Google Pixel 7 Pro', 'image3.png', 8, 'Description 3', 200)
+    "c9912c06-0a57-4812-89cb-8322c90fb3e5": Device("c9912c06-0a57-4812-89cb-8322c90fb3e5", 'iPhone 14 Pro Max',
+                                                   'image1.png', 15, 'Description 1', 100, [1, 2]),
+    "d4e2c72a-1785-454b-ae90-4796859f85d4": Device("d4e2c72a-1785-454b-ae90-4796859f85d4", 'Samsung Galaxy S22 Ultra',
+                                                   'image2.png', 5, 'Description 2', 200, [2, 3]),
+    "8c4dd076-e817-4969-a4fa-e33a28023d83": Device("8c4dd076-e817-4969-a4fa-e33a28023d83", 'Google Pixel 7 Pro',
+                                                   'image3.png', 8, 'Description 3', 200)
 })
 
 promotions = [
@@ -114,11 +121,13 @@ def get_promotion(promo_id):
 def get_customer(customer_id):
     return customers.get(customer_id)
 
+
 def get_unauthorized_response(message=None):
     if message:
         return make_response(jsonify(message=message), 401)
-    
+
     return make_response(jsonify(message=f"Unauthorized"), 401)
+
 
 # Define a custom Flask decorator for JWT authentication
 def requires_auth(f):
@@ -188,7 +197,8 @@ def authorize(required_scopes):
 @requires_auth
 @authorize(required_scopes=['devices_list'])
 def get_devices():
-    return json.dumps([device.__dict__ for device in devices.values()], cls=DeviceEncoder), 200, {'content-type': 'application/json'}
+    return json.dumps([device.__dict__ for device in devices.values()], cls=DeviceEncoder), 200, {
+        'content-type': 'application/json'}
 
 
 @app.route('/devices/<string:device_id>', methods=['GET'])
@@ -270,7 +280,7 @@ def delete_device(device_id):
     else:
         response = make_response(jsonify(message=f"Device with ID {device_id} not found"), 404)
         abort(response)
-    
+
 
 @app.route('/promotions', methods=['GET'])
 @requires_auth
@@ -426,6 +436,16 @@ def update_customer(customer_id):
     return jsonify({'device': customer.__dict__}), 200
 
 
+@app.route('/update/<string:user_id>', methods=['PATCH'])
+@requires_auth
+@authorize(required_scopes=[])
+def update_user(user_id):
+    get_token("internal_login")
+    print(ACCESS_TOKEN)
+
+    # return jsonify({'device': customer.__dict__}), 200
+    return jsonify({'message': 'Updated'}), 200
+
 
 # Helper function to get JWKS from the JWKS endpoint
 def get_jwks(jwks_url):
@@ -476,6 +496,49 @@ def jwk_to_public_key(jwk):
     )
 
     return pem
+
+
+def get__new_access_token(scopes):
+    # Define the request URL
+    url = "https://api.asgardeo.io/t/kfonebusiness/oauth2/token"
+
+    # Define the request headers
+    headers = {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Authorization": f"Basic {base64.b64encode(f'{ADMIN_CLIENT_ID}:{ADMIN_CLIENT_SECRET}'.encode()).decode()}"
+    }
+
+    # Define the request body
+    data = {
+        "grant_type": "client_credentials",
+        "scope": f"{scopes}"
+    }
+
+    # Send the request and retrieve the response
+    response = requests.post(url, headers=headers, data=data)
+
+    # Check if the response was successful
+    if response.status_code == 200:
+        # Retrieve the access token from the response body
+        access_token = response.json()["access_token"]
+
+        # Return the access token
+        ACCESS_TOKEN[scopes] = access_token
+    else:
+        # Raise an exception if the response was not successful
+        response.raise_for_status()
+
+def get_token(scopes):
+    if scopes in ACCESS_TOKEN:
+        decoded_token = jwt.decode(ACCESS_TOKEN[scopes], options={"verify_signature": False})
+        if decoded_token['exp'] < time.time():
+            get__new_access_token(scopes)
+        return ACCESS_TOKEN[scopes]
+    else:
+        get__new_access_token(scopes)
+        return ACCESS_TOKEN[scopes]
+
+
 
 if __name__ == '__main__':
     app.run(port=3000)
