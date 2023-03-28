@@ -411,5 +411,5 @@ def jwk_to_public_key(jwk):
 
     return pem
 
-if __name__ == '__main__':
-    app.run(port=3000)
+# if __name__ == '__main__':
+#     app.run(port=3000)
