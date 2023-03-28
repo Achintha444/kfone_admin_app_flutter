@@ -1,23 +1,25 @@
-import uuid
-
-from flask import Flask
-import jwt
-import requests
-from functools import wraps
-from flask import request, abort, jsonify, make_response
-from typing import List
+import time
 import base64
 import json
-from enum import Enum
-from cryptography.hazmat.primitives.asymmetric import rsa, ec
-from cryptography.hazmat.primitives import serialization
-from cryptography.hazmat.backends import default_backend
+import uuid
 from collections import OrderedDict
+from enum import Enum
+from functools import wraps
+from typing import List
+
+import jwt
+import requests
+from flask import Flask, abort, jsonify, make_response, request
+from jwt import PyJWKClient
 
 app = Flask(__name__)
 
+asgardeo_public_key = None
 JWKS_URL = 'https://api.asgardeo.io/t/kfonebusiness/oauth2/jwks'
 AUD = "obioKxDGAAxKeSlXrtnDBEWdkWYa"
+ADMIN_CLIENT_ID = "dcVj3Rg8kgO8JBr7pj656qvHmpEa"
+ADMIN_CLIENT_SECRET = "3SAUmmtCC4W_15yMewpSdjP883oa"
+ACCESS_TOKEN = {}
 
 
 # Device model
@@ -83,9 +85,12 @@ class PromotionEncoder(json.JSONEncoder):
 # ]
 
 devices = OrderedDict({
-    "c9912c06-0a57-4812-89cb-8322c90fb3e5" : Device("c9912c06-0a57-4812-89cb-8322c90fb3e5", 'iPhone 14 Pro Max', 'image1.png', 15, 'Description 1', 100, [1, 2]),
-    "d4e2c72a-1785-454b-ae90-4796859f85d4": Device("d4e2c72a-1785-454b-ae90-4796859f85d4", 'Samsung Galaxy S22 Ultra', 'image2.png', 5, 'Description 2', 200, [2, 3]),
-    "8c4dd076-e817-4969-a4fa-e33a28023d83": Device("8c4dd076-e817-4969-a4fa-e33a28023d83", 'Google Pixel 7 Pro', 'image3.png', 8, 'Description 3', 200)
+    "c9912c06-0a57-4812-89cb-8322c90fb3e5": Device("c9912c06-0a57-4812-89cb-8322c90fb3e5", 'iPhone 14 Pro Max',
+                                                   'image1.png', 15, 'Description 1', 100, [1, 2]),
+    "d4e2c72a-1785-454b-ae90-4796859f85d4": Device("d4e2c72a-1785-454b-ae90-4796859f85d4", 'Samsung Galaxy S22 Ultra',
+                                                   'image2.png', 5, 'Description 2', 200, [2, 3]),
+    "8c4dd076-e817-4969-a4fa-e33a28023d83": Device("8c4dd076-e817-4969-a4fa-e33a28023d83", 'Google Pixel 7 Pro',
+                                                   'image3.png', 8, 'Description 3', 200)
 })
 
 promotions = [
@@ -114,11 +119,13 @@ def get_promotion(promo_id):
 def get_customer(customer_id):
     return customers.get(customer_id)
 
+
 def get_unauthorized_response(message=None):
     if message:
         return make_response(jsonify(message=message), 401)
-    
+
     return make_response(jsonify(message=f"Unauthorized"), 401)
+
 
 # Define a custom Flask decorator for JWT authentication
 def requires_auth(f):
@@ -133,26 +140,13 @@ def requires_auth(f):
             abort(get_unauthorized_response())
 
         token = authz_header.split()[1]
-        decoded_token = None
         if not token:
             abort(get_unauthorized_response())  # Unauthorized
 
         try:
-            # Get the JWT header and extract the kid
-            # jwt_header = jwt.get_unverified_header(token.split()[1])
-            jwt_header = jwt.get_unverified_header(token)
-            kid = jwt_header['kid']
-
-            # Get the JWKS from the JWKS endpoint and find the public key for the kid
-            jwks = get_jwks(JWKS_URL)
-            public_key = None
-            for jwk in jwks['keys']:
-                if jwk['kid'] == kid:
-                    public_key = jwk_to_public_key(jwk)
-                    break
-
+            public_key = get_public_key(token)
             # Decode JWT access token and verify signature using the public key
-            decoded_token = jwt.decode(token, public_key, algorithms=['RS256'], audience=AUD, verify=True)
+            jwt.decode(token, public_key, algorithms=['RS256'], audience=AUD, verify=True)
         except:
             abort(401)  # Unauthorized
 
@@ -160,6 +154,16 @@ def requires_auth(f):
 
     return decorated
 
+def get_public_key(token):
+
+    global asgardeo_public_key
+    if asgardeo_public_key is not None:
+        return asgardeo_public_key
+
+    jwks_client = PyJWKClient(JWKS_URL)
+    signing_key = jwks_client.get_signing_key_from_jwt(token)
+    asgardeo_public_key = signing_key.key
+    return asgardeo_public_key
 
 def authorize(required_scopes):
     def decorator(func):
@@ -188,7 +192,8 @@ def authorize(required_scopes):
 @requires_auth
 @authorize(required_scopes=['devices_list'])
 def get_devices():
-    return json.dumps([device.__dict__ for device in devices.values()], cls=DeviceEncoder), 200, {'content-type': 'application/json'}
+    return json.dumps([device.__dict__ for device in devices.values()], cls=DeviceEncoder), 200, {
+        'content-type': 'application/json'}
 
 
 @app.route('/devices/<string:device_id>', methods=['GET'])
@@ -270,7 +275,7 @@ def delete_device(device_id):
     else:
         response = make_response(jsonify(message=f"Device with ID {device_id} not found"), 404)
         abort(response)
-    
+
 
 @app.route('/promotions', methods=['GET'])
 @requires_auth
@@ -401,7 +406,7 @@ def add_customer():
     return jsonify({'customer': "oops"}), 201
 
 
-@app.route('/customers/<string:customer_id>', methods=['PUT', 'PATCH'])
+@app.route('/customers/<string:customer_id>', methods=['PATCH'])
 @requires_auth
 @authorize(required_scopes=['customers_modify'])
 def update_customer(customer_id):
@@ -424,58 +429,6 @@ def update_customer(customer_id):
     #     device.promo_id = device_data['promo_id']
 
     return jsonify({'device': customer.__dict__}), 200
-
-
-
-# Helper function to get JWKS from the JWKS endpoint
-def get_jwks(jwks_url):
-    response = requests.get(jwks_url)
-    return response.json()
-
-
-def jwk_to_public_key(jwk):
-    """
-    Convert a JWK to a public key in PEM format.
-
-    Args:
-        jwk (dict): JSON Web Key containing the public key information.
-
-    Returns:
-        bytes: The public key in PEM format.
-
-    Raises:
-        ValueError: If the JWK is invalid or if the key type is not supported.
-    """
-
-    # Validate JWK
-    if not isinstance(jwk, dict):
-        raise ValueError('Invalid JWK: JWK must be a dictionary')
-    if jwk.get('kty') not in ['RSA', 'EC']:
-        raise ValueError(f"Invalid JWK: Unsupported key type '{jwk.get('kty')}'")
-
-    # Get public key parameters
-    if jwk['kty'] == 'RSA':
-        n = int.from_bytes(base64.urlsafe_b64decode(jwk['n'] + '=='), 'big')
-        e = int.from_bytes(base64.urlsafe_b64decode(jwk['e'] + '=='), 'big')
-        public_key = rsa.RSAPublicNumbers(e, n).public_key(default_backend())
-    else:
-        if jwk['crv'] != 'P-256':
-            raise ValueError(f"Invalid JWK: Unsupported curve '{jwk['crv']}'")
-        x = int.from_bytes(base64.urlsafe_b64decode(jwk['x'] + '=='), 'big')
-        y = int.from_bytes(base64.urlsafe_b64decode(jwk['y'] + '=='), 'big')
-        public_key = ec.EllipticCurvePublicNumbers(
-            x=x,
-            y=y,
-            curve=ec.SECP256R1()
-        ).public_key(default_backend())
-
-    # Serialize public key to PEM format
-    pem = public_key.public_bytes(
-        encoding=serialization.Encoding.PEM,
-        format=serialization.PublicFormat.SubjectPublicKeyInfo
-    )
-
-    return pem
 
 if __name__ == '__main__':
     app.run(port=3000)
