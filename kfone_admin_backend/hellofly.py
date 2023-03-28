@@ -221,7 +221,7 @@ def add_device():
     return jsonify({'device': new_device.__dict__}), 201
 
 
-@app.route('/devices/<int:device_id>', methods=['PUT', 'PATCH'])
+@app.route('/devices/<string:device_id>', methods=['PUT', 'PATCH'])
 @requires_auth
 @authorize(required_scopes=['devices_modify'])
 def update_device(device_id):
@@ -246,7 +246,7 @@ def update_device(device_id):
     return jsonify({'device': device.__dict__}), 200
 
 
-@app.route('/devices/<int:device_id>', methods=['DELETE'])
+@app.route('/devices/<string:device_id>', methods=['DELETE'])
 @requires_auth
 @authorize(required_scopes=['devices_delete'])
 def delete_device(device_id):
