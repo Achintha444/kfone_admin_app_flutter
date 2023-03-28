@@ -12,6 +12,7 @@ from enum import Enum
 from cryptography.hazmat.primitives.asymmetric import rsa, ec
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.backends import default_backend
+from collections import OrderedDict
 
 app = Flask(__name__)
 
@@ -75,11 +76,17 @@ class PromotionEncoder(json.JSONEncoder):
 
 # uuid sample value2 
 # Sample data
-devices = [
-    Device("c9912c06-0a57-4812-89cb-8322c90fb3e5", 'iPhone 14 Pro Max', 'image1.png', 15, 'Description 1', 100, [1, 2]),
-    Device("d4e2c72a-1785-454b-ae90-4796859f85d4", 'Samsung Galaxy S22 Ultra', 'image2.png', 5, 'Description 2', 200, [2, 3]),
-    Device("8c4dd076-e817-4969-a4fa-e33a28023d83", 'Google Pixel 7 Pro', 'image3.png', 8, 'Description 3', 200)
-]
+# devices = [
+#     Device("c9912c06-0a57-4812-89cb-8322c90fb3e5", 'iPhone 14 Pro Max', 'image1.png', 15, 'Description 1', 100, [1, 2]),
+#     Device("d4e2c72a-1785-454b-ae90-4796859f85d4", 'Samsung Galaxy S22 Ultra', 'image2.png', 5, 'Description 2', 200, [2, 3]),
+#     Device("8c4dd076-e817-4969-a4fa-e33a28023d83", 'Google Pixel 7 Pro', 'image3.png', 8, 'Description 3', 200)
+# ]
+
+devices = OrderedDict({
+    "c9912c06-0a57-4812-89cb-8322c90fb3e5" : Device("c9912c06-0a57-4812-89cb-8322c90fb3e5", 'iPhone 14 Pro Max', 'image1.png', 15, 'Description 1', 100, [1, 2]),
+    "d4e2c72a-1785-454b-ae90-4796859f85d4": Device("d4e2c72a-1785-454b-ae90-4796859f85d4", 'Samsung Galaxy S22 Ultra', 'image2.png', 5, 'Description 2', 200, [2, 3]),
+    "8c4dd076-e817-4969-a4fa-e33a28023d83": Device("8c4dd076-e817-4969-a4fa-e33a28023d83", 'Google Pixel 7 Pro', 'image3.png', 8, 'Description 3', 200)
+})
 
 promotions = [
     Promotion(1, 'PROMO1', 10, [Tier.Silver]),
@@ -87,13 +94,12 @@ promotions = [
     Promotion(3, 'PROMO3', 30, [Tier.Platinum])
 ]
 
+customers = {}
+
 
 # Get device by ID
 def get_device(device_id):
-    for device in devices:
-        if device.device_id == device_id:
-            return device
-    return None
+    return devices.get(device_id)
 
 
 # Get promotion by ID
@@ -102,6 +108,11 @@ def get_promotion(promo_id):
         if promotion.promo_id == promo_id:
             return promotion
     return None
+
+
+# Get customer by ID
+def get_customer(customer_id):
+    return customers.get(customer_id)
 
 def get_unauthorized_response(message=None):
     if message:
@@ -177,7 +188,7 @@ def authorize(required_scopes):
 @requires_auth
 @authorize(required_scopes=['devices_list'])
 def get_devices():
-    return json.dumps({"devices": devices}, cls=DeviceEncoder), 200, {'content-type': 'application/json'}
+    return json.dumps([device.__dict__ for device in devices.values()], cls=DeviceEncoder), 200, {'content-type': 'application/json'}
 
 
 @app.route('/devices/<string:device_id>', methods=['GET'])
@@ -197,10 +208,10 @@ def get_device_by_id(device_id):
 @authorize(required_scopes=['devices_list'])
 def search_device_by_name(device_name):
     device_list = []
-    for device in devices:
+    for device_id, device in devices.items():
         if device_name.lower() in device.name.lower():
             device_list.append(device)
-    return json.dumps({"devices": device_list}, cls=DeviceEncoder), 200, {'content-type': 'application/json'}
+    return json.dumps(device_list, cls=DeviceEncoder), 200, {'content-type': 'application/json'}
 
 
 @app.route('/devices', methods=['POST'])
@@ -218,8 +229,8 @@ def add_device():
         promo_id_list = device_data['promo_id']
     new_device = Device(device_id, device_data['name'], device_data['image_uri'], device_data['qty'],
                         device_data['description'], device_data['price'], promo_id_list)
-    devices.append(new_device)
-    return jsonify({'device': new_device.__dict__}), 201
+    devices[device_id] = new_device
+    return jsonify(new_device.__dict__), 201
 
 
 @app.route('/devices/<string:device_id>', methods=['PUT', 'PATCH'])
@@ -244,20 +255,22 @@ def update_device(device_id):
     if 'promo_id' in device_data:
         device.promo_id = device_data['promo_id']
 
-    return jsonify({'device': device.__dict__}), 200
+    devices[device_id] = device
+    return jsonify(device.__dict__), 200
 
 
 @app.route('/devices/<string:device_id>', methods=['DELETE'])
 @requires_auth
 @authorize(required_scopes=['devices_delete'])
 def delete_device(device_id):
-    device = [d for d in devices if d.device_id == device_id]
-    if len(device) == 0:
+    # check if device exists
+    if device_id in devices:
+        devices.pop(device_id)
+        return jsonify({'message': f"Device with ID {device_id} deleted successfully"})
+    else:
         response = make_response(jsonify(message=f"Device with ID {device_id} not found"), 404)
         abort(response)
-    devices.remove(device[0])
-    return jsonify({'message': f"Device with ID {device_id} deleted successfully"})
-
+    
 
 @app.route('/promotions', methods=['GET'])
 @requires_auth
@@ -360,6 +373,51 @@ def add_promotion_to_device():
 @authorize(required_scopes=['sales_trends_view'])
 def sales_activity():
     return 'Access granted!'
+
+
+@app.route('/customers', methods=['POST'])
+@requires_auth
+@authorize(required_scopes=['customers_add'])
+def add_customer():
+    # customer_data = request.get_json()
+    # # generate a uuid for the device as a string
+    # device_id = f'{uuid.uuid1()}'
+    # if 'name' not in device_data or 'image_uri' not in device_data or 'qty' not in device_data or \
+    #         'description' not in device_data or 'price' not in device_data:
+    #     return jsonify({'message': 'Missing required fields'}), 400
+    # promo_id_list = []
+    # if 'promo_id' in device_data:
+    #     promo_id_list = device_data['promo_id']
+    # new_device = Device(device_id, device_data['name'], device_data['image_uri'], device_data['qty'],
+    #                     device_data['description'], device_data['price'], promo_id_list)
+    # devices.append(new_device)
+    return jsonify({'customer': "oops"}), 201
+
+
+@app.route('/customers/<string:customer_id>', methods=['PUT', 'PATCH'])
+@requires_auth
+@authorize(required_scopes=['customers_modify'])
+def update_customer(customer_id):
+    customer = get_customer(customer_id)
+    if not customer:
+        return jsonify({'message': 'Customer not found'}), 404
+
+    # device_data = request.get_json()
+    # if 'name' in device_data:
+    #     device.name = device_data['name']
+    # if 'image_uri' in device_data:
+    #     device.image_uri = device_data['image_uri']
+    # if 'qty' in device_data:
+    #     device.qty = device_data['qty']
+    # if 'description' in device_data:
+    #     device.description = device_data['description']
+    # if 'price' in device_data:
+    #     device.price = device_data['price']
+    # if 'promo_id' in device_data:
+    #     device.promo_id = device_data['promo_id']
+
+    return jsonify({'device': customer.__dict__}), 200
+
 
 
 # Helper function to get JWKS from the JWKS endpoint
