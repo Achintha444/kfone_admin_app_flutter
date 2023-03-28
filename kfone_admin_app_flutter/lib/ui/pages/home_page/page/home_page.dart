@@ -15,6 +15,7 @@ import 'package:kfone_admin_app_flutter/util/model/session_token.dart';
 import '../../../../util/ui_util.dart';
 import '../../account_page/page/account_page.dart';
 import '../../account_page/page/account_page_arguments.dart';
+import '../features/devices_page/page/device_add_page.dart';
 import '../widgets/add_resource_button.dart';
 
 class HomePage extends StatelessWidget {
@@ -107,7 +108,7 @@ class HomePage extends StatelessWidget {
       future: Future.wait([UserDetailsController.getUserScopes(), item.scopes]),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-           if(UiUtil.compareLists(snapshot.data![0], snapshot.data![1])) {
+          if (UiUtil.compareLists(snapshot.data![0], snapshot.data![1])) {
             return ListTile(
               leading: Icon(item.icon),
               title: Text(item.itemName),
@@ -214,11 +215,35 @@ class HomePage extends StatelessWidget {
     return BlocBuilder<HomePageBloc, HomePageState>(
       builder: (context, state) {
         if (state is DevicesInterface) {
-          return AddResourceButton(tooltip: state.drawerItem.tooltip);
+          return AddResourceButton(
+            tooltip: state.drawerItem.tooltip,
+            onPressed: () {
+              Navigator.pushNamed(
+                context,
+                DeviceAddPage.routeName,
+              );
+            },
+          );
         } else if (state is PromotionsInterface) {
-          return AddResourceButton(tooltip: state.drawerItem.tooltip);
+          return AddResourceButton(
+            tooltip: state.drawerItem.tooltip,
+            onPressed: () {
+              Navigator.pushNamed(
+                context,
+                DeviceAddPage.routeName,
+              );
+            },
+          );
         } else if (state is CustomersInterface) {
-          return AddResourceButton(tooltip: state.drawerItem.tooltip);
+          return AddResourceButton(
+            tooltip: state.drawerItem.tooltip,
+            onPressed: () {
+              Navigator.pushNamed(
+                context,
+                DeviceAddPage.routeName,
+              );
+            },
+          );
         } else {
           return Container();
         }
