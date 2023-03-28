@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kfone_admin_app_flutter/ui/pages/account_page/bloc/account_page_bloc.dart';
 import 'package:kfone_admin_app_flutter/ui/pages/home_page/bloc/home_page_bloc.dart';
 import 'package:kfone_admin_app_flutter/ui/pages/home_page/features/customers_page/page/customers_page.dart';
+import 'package:kfone_admin_app_flutter/ui/pages/home_page/features/devices_page/page/devices_page.dart';
+import 'package:kfone_admin_app_flutter/ui/pages/home_page/features/promotions_page/page/promotions_page.dart';
 import 'package:kfone_admin_app_flutter/ui/pages/home_page/features/sales_trend_page/page/sales_trend_page.dart';
 import 'package:kfone_admin_app_flutter/ui/pages/home_page/models/drawer_item.dart';
 import 'package:kfone_admin_app_flutter/ui/pages/home_page/page/home_page_arguements.dart';
@@ -11,6 +13,7 @@ import 'package:kfone_admin_app_flutter/util/model/session_token.dart';
 import '../../../../util/ui_util.dart';
 import '../../account_page/page/account_page.dart';
 import '../../account_page/page/account_page_arguments.dart';
+import '../widgets/add_resource_button.dart';
 
 class HomePage extends StatelessWidget {
   static const String routeName = "/home";
@@ -44,6 +47,7 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     final HomePageArguments args =
         ModalRoute.of(context)!.settings.arguments as HomePageArguments;
 
@@ -95,6 +99,7 @@ class HomePage extends StatelessWidget {
           ),
         ),
         body: _buildBody(context),
+        floatingActionButton: _buildAddResourceFloatingButton(context),
       ),
     );
   }
@@ -165,13 +170,29 @@ class HomePage extends StatelessWidget {
             child: CircularProgressIndicator(),
           );
         } else if (state is DevicesInterface) {
-          return const SalesTrendPage();
+          return const DevicesPage();
         } else if (state is PromotionsInterface) {
-          return const SalesTrendPage();
+          return const PromotionsPage();
         } else if (state is CustomersInterface) {
           return const CustomersPage();
         } else if (state is HomePageInitial || state is SalesTrendsInterface) {
           return const SalesTrendPage();
+        } else {
+          return Container();
+        }
+      },
+    );
+  }
+
+  BlocBuilder<HomePageBloc, HomePageState> _buildAddResourceFloatingButton(BuildContext context) {
+    return BlocBuilder<HomePageBloc, HomePageState>(
+      builder: (context, state) {
+        if (state is DevicesInterface) {
+          return AddResourceButton(tooltip: state.drawerItem.tooltip);
+        } else if (state is PromotionsInterface) {
+          return AddResourceButton(tooltip: state.drawerItem.tooltip);
+        } else if (state is CustomersInterface) {
+          return AddResourceButton(tooltip: state.drawerItem.tooltip);
         } else {
           return Container();
         }

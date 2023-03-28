@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../../util/ui_util.dart';
-import '../widgets/table_header_widget.dart';
+import '../../../../../widgets/common/table_header_widget.dart';
 import '../widgets/table_row_data.dart';
 import '../widgets/tier_chip.dart';
 

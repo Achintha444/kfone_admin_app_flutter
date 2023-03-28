@@ -23,4 +23,17 @@ class DrawerItem {
         return "";
     }
   }
+
+  String get tooltip {
+    switch (type) {
+      case DrawerItemTypes.devices:
+        return "Add Device";
+      case DrawerItemTypes.promotions:
+        return "Add Promotion";
+      case DrawerItemTypes.customers:
+        return "Add Customer";
+      default:
+        return "";
+    }
+  }
 }
