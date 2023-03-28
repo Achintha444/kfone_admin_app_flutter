@@ -4,12 +4,14 @@ class ResizableImage extends StatelessWidget {
   final double? height;
   final double? width;
   final BoxFit fit;
+  final String imageLocation;
 
   const ResizableImage({
     super.key,
     this.height,
     this.width,
     required this.fit,
+    required this.imageLocation
   });
 
   @override
@@ -20,7 +22,7 @@ class ResizableImage extends StatelessWidget {
       alignment: Alignment.center,
       decoration: BoxDecoration(
         image: DecorationImage(
-          image: const AssetImage('assets/images/logo.png'),
+          image: AssetImage(imageLocation),
           fit: fit,
         ),
       ),

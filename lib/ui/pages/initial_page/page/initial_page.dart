@@ -1,10 +1,9 @@
 import "package:flutter/material.dart";
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kfone_admin_app_flutter/ui/pages/home_page/page/home_page.dart';
 
 import '../../../../util/ui_util.dart';
 import '../../../widgets/common/resizable_image.dart';
-import '../../account_page/page/account_page.dart';
-import '../../account_page/page/account_page_arguments.dart';
 import '../bloc/inital_page_bloc.dart';
 import '../widgets/signin_button.dart';
 
@@ -34,7 +33,11 @@ class InitialPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Spacer(),
-            const ResizableImage(height: 100, fit: BoxFit.fitHeight),
+            const ResizableImage(
+              height: 100,
+              fit: BoxFit.fitHeight,
+              imageLocation: 'assets/images/logo.png',
+            ),
             const SizedBox(height: 10),
             const Text("Admininstrator Application"),
             const Spacer(),
@@ -59,9 +62,10 @@ class InitialPage extends StatelessWidget {
               UiUtil.getSnackBar("Signin Failed"),
             );
           } else if (state is SigninSuccess) {
-            Navigator.pushNamed(context, AccountPage.routeName,
-                arguments:
-                    AccountPageArguments(state.sessionToken));
+            Navigator.pushNamed(context, HomePage.routeName);
+            // Navigator.pushNamed(context, AccountPage.routeName,
+            //     arguments:
+            //         AccountPageArguments(state.sessionToken));
           }
         },
         child: BlocBuilder<InitalPageBloc, InitalPageState>(

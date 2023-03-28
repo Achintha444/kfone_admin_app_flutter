@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kfone_admin_app_flutter/ui/pages/home_page/page/home_page.dart';
 
 import 'theme/theme.dart';
 import 'ui/pages/account_page/page/account_page.dart';
@@ -21,6 +22,7 @@ class MyApp extends StatelessWidget {
       routes: {
         InitialPage.routeName: (context) => const InitialPage(),
         AccountPage.routeName: (context) => const AccountPage(),
+        HomePage.routeName: (context) => const HomePage(),
       },
     );
   }

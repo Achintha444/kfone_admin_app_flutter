@@ -30,4 +30,5 @@ ThemeData themeData = ThemeData(
     buttonColor: Colors.red,
     textTheme: ButtonTextTheme.primary,
   ),
+  dividerTheme: const DividerThemeData(thickness: 2)
 );

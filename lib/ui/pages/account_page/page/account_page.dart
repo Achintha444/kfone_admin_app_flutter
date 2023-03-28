@@ -20,7 +20,7 @@ class AccountPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
+        automaticallyImplyLeading: true,
         title: const Text("Account"),
       ),
       body: Padding(
