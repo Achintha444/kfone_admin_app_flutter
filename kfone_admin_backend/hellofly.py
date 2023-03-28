@@ -73,11 +73,12 @@ class PromotionEncoder(json.JSONEncoder):
         return super().default(obj)
 
 
+# uuid sample value2 
 # Sample data
 devices = [
-    Device(1, 'Device 1', 'image1.png', 15, 'Description 1', 100, [1, 2]),
-    Device(2, 'Device 2', 'image2.png', 5, 'Description 2', 200, [2, 3]),
-    Device(3, 'Device 3', 'image3.png', 8, 'Description 3', 200)
+    Device("c9912c06-0a57-4812-89cb-8322c90fb3e5", 'iPhone 14 Pro Max', 'image1.png', 15, 'Description 1', 100, [1, 2]),
+    Device("d4e2c72a-1785-454b-ae90-4796859f85d4", 'Samsung Galaxy S22 Ultra', 'image2.png', 5, 'Description 2', 200, [2, 3]),
+    Device("8c4dd076-e817-4969-a4fa-e33a28023d83", 'Google Pixel 7 Pro', 'image3.png', 8, 'Description 3', 200)
 ]
 
 promotions = [
@@ -179,7 +180,7 @@ def get_devices():
     return json.dumps({"devices": devices}, cls=DeviceEncoder), 200, {'content-type': 'application/json'}
 
 
-@app.route('/devices/<int:device_id>', methods=['GET'])
+@app.route('/devices/<string:device_id>', methods=['GET'])
 @requires_auth
 @authorize(required_scopes=['devices_list'])
 def get_device_by_id(device_id):
@@ -410,5 +411,5 @@ def jwk_to_public_key(jwk):
 
     return pem
 
-# if __name__ == '__main__':
-#     app.run(port=8001)
+if __name__ == '__main__':
+    app.run(port=3000)
