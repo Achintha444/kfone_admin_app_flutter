@@ -131,4 +131,11 @@ abstract class AuthorizationConfigUtil {
 
     return configJson["LocalStoreKey"]["AccessTokenExpirationDateTime"];
   }
+
+  /// get the base API base url
+  static Future<String> getAPIBaseUrl() async {
+    final Map<String, dynamic> configJson = await _readConfigJson();
+
+    return configJson["AuthorizationConfig"]["APIBaseUrl"];
+  }
 }
