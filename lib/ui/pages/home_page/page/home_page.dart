@@ -1,10 +1,16 @@
 import "package:flutter/material.dart";
+import 'package:kfone_admin_app_flutter/ui/pages/home_page/features/consumers_page/widgets/table_header_widget.dart';
+import 'package:kfone_admin_app_flutter/ui/pages/home_page/features/consumers_page/widgets/tier_chip.dart';
+import 'package:kfone_admin_app_flutter/ui/pages/home_page/features/sales_trend_page/page/sales_trend_page.dart';
 import 'package:kfone_admin_app_flutter/ui/pages/home_page/page/home_page_arguements.dart';
+import 'package:kfone_admin_app_flutter/util/common.dart';
 import 'package:kfone_admin_app_flutter/util/model/session_token.dart';
+import 'package:kfone_admin_app_flutter/util/ui_util.dart';
 
 import '../../../widgets/common/resizable_image.dart';
 import '../../account_page/page/account_page.dart';
 import '../../account_page/page/account_page_arguments.dart';
+import '../features/consumers_page/widgets/table_row_data.dart';
 import '../features/sales_trend_page/widgets/bar_graph.dart';
 import '../features/sales_trend_page/widgets/curve_graph.dart';
 import '../features/sales_trend_page/widgets/line_graph.dart';
@@ -69,7 +75,7 @@ class HomePage extends StatelessWidget {
             ),
             ListTile(
               leading: const Icon(Icons.people_alt_rounded),
-              title: const Text('Consumers'),
+              title: const Text('Customers'),
               onTap: () {
                 Navigator.pop(context);
               },
@@ -90,20 +96,26 @@ class HomePage extends StatelessWidget {
           ],
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: SingleChildScrollView(
-          child: Column(
-            children: const [
-              BarGraph(),
-              Divider(),
-              LineGraph(),
-              Divider(),
-              CurveGraph(),
-              Divider(),
-              RadarGraph()
-            ],
-          ),
+      body: SizedBox(
+        width: UiUtil.getMediaQueryWidth(context),
+        child: DataTable(
+          columns: const <DataColumn>[
+            DataColumn(
+              label: TableHeaderWidget(label: 'Name'),
+            ),
+            DataColumn(
+              label: TableHeaderWidget(label: 'Tier'),
+            ),
+            DataColumn(
+              label: Spacer(),
+            ),
+          ],
+          rows: <DataRow>[
+            tableRowData("Abhishek", TierChipType.gold),
+            tableRowData("Abhishek", TierChipType.silver),
+            tableRowData("Abhishek", TierChipType.platinum),
+            tableRowData("Abhishek", TierChipType.no),
+          ],
         ),
       ),
     );
