@@ -9,6 +9,8 @@ paths:
     get:
       summary: Retrieve a list of all devices
       description: <b>Scope required:</b> `devices_list`
+      tags:
+        - devices
       responses:
         '200':
           description: A list of all devices
@@ -21,6 +23,8 @@ paths:
     post:
       summary: Add a new device
       description: <b>Scope required:</b> `devices_add`
+      tags:
+        - devices
       requestBody:
         required: true
         content:
@@ -39,6 +43,8 @@ paths:
     get:
       summary: Search a device by name
       description: <b>Scope required:</b> `devices_list`
+      tags:
+        - devices
       parameters:
         - in: path
           name: name
@@ -69,6 +75,8 @@ paths:
     get:
       summary: Retrieve a device by ID
       description: <b>Scope required:</b> `devices_list`
+      tags:
+        - devices
       responses:
         '200':
           description: The requested device
@@ -81,6 +89,8 @@ paths:
     put:
       summary: Update a device
       description: <b>Scope required:</b> `devices_modify`
+      tags:
+        - devices
       requestBody:
         required: true
         content:
@@ -99,6 +109,8 @@ paths:
     delete:
       summary: Remove a device
       description: <b>Scope required:</b> `devices_delete`
+      tags:
+        - devices
       responses:
         '204':
           description: Device removed
@@ -234,6 +246,110 @@ paths:
           description: Invalid input
         '404':
           description: Promotion or device not found
+          
+  /customers:
+    get:
+      summary: Get all customers
+      description: <b>Scope required:</b> `customers_list`
+      tags:
+        - customers
+      responses:
+        '200':
+          description: Returns a list of all customers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Customer'
+    post:
+      summary: Add a new custome
+      description: <b>Scope required:</b> `customers_add`
+      tags:
+        - customers
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerCreateInput'
+      responses:
+        '201':
+          description: Returns the newly created customer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+  /customers/{customerId}:
+    parameters:
+      - name: customerId
+        in: path
+        description: ID of the customer to retrieve or update
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      summary: Get a customer by ID
+      description: <b>Scope required:</b> `customers_list`
+      tags:
+        - customers
+      responses:
+        '200':
+          description: Returns the customer with the given ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '404':
+          description: Customer not found
+    patch:
+      summary: Update an existing customer
+      description: <b>Scope required:</b> `customers_modify`
+      tags:
+        - customers
+      parameters:
+        - name: customerId
+          in: path
+          description: ID of the customer to update
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerPatchInput'
+      responses:
+        '200':
+          description: Returns the updated customer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '404':
+          description: Customer not found
+    delete:
+      summary: Delete a customer by ID
+      description: <b>Scope required:</b> `customers_delete`
+      tags:
+        - customers
+      parameters:
+        - name: customerId
+          in: path
+          description: ID of the customer to delete
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Customer deleted successfully
+        '404':
+          description: Customer not found
+
 
   /sales:
     get:
@@ -357,3 +473,66 @@ components:
           items:
             type: integer
           description: The IDs of the devices to add the promotion to
+    
+    Customer:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the customer
+        firstName:
+          type: string
+          description: First name of the customer
+        lastName:
+          type: string
+          description: Last name of the customer
+        email:
+          type: string
+          description: Email Address of the customer
+        tier:
+          type: string
+          enum: [Bronze, Silver, Platinum, None]
+          description: Customer's tier level
+        country:
+          type: string
+          description: Country where the customer is located
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - tier
+        - country
+    CustomerCreateInput:
+      type: object
+      properties:
+        firstName:
+          type: string
+          description: First name of the customer
+        lastName:
+          type: string
+        tier:
+          type: string
+          enum: [Bronze, Silver, Platinum, None]
+          default: None
+          description: Customer's tier level
+        country:
+          type: string
+          description: Country where the customer is located
+      required:
+        - firstName
+        - lastName
+        - tier
+        - country
+    CustomerPatchInput:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        tier:
+          type: string
+          enum: [Bronze, Silver, Platinum, None]
+          description: Customer's tier level

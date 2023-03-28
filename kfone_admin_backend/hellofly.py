@@ -375,6 +375,13 @@ def sales_activity():
     return 'Access granted!'
 
 
+@app.route('/customers', methods=['GET'])
+@requires_auth
+@authorize(required_scopes=['customers_list'])
+def get_customers():
+    return json.dumps([customer.__dict__ for customer in customers.values()]), 200, {'content-type': 'application/json'}
+
+
 @app.route('/customers', methods=['POST'])
 @requires_auth
 @authorize(required_scopes=['customers_add'])
