@@ -37,6 +37,7 @@ class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   void _onUserDetailsTap(BuildContext context, SessionToken sessionToken) {
+    Navigator.pop(context);
     Navigator.pushNamed(context, AccountPage.routeName,
         arguments: AccountPageArguments(sessionToken));
   }
