@@ -11,9 +11,9 @@ part 'account_page_event.dart';
 part 'account_page_state.dart';
 
 class AccountPageBloc extends Bloc<AccountPageEvent, AccountPageState> {
-  AccountPageBloc() : super(Initial()) {
+  AccountPageBloc() : super(AccountPageInitial()) {
     on<GetUserInfo>((event, emit) async {
-      emit(Loading());
+      emit(AccountPageLoading());
 
       await UserDetailsController.getUserDetails(event.sessionToken)
           .then(
@@ -22,7 +22,7 @@ class AccountPageBloc extends Bloc<AccountPageEvent, AccountPageState> {
           .catchError((err) => emit(UserInfoFail()));
     });
     on<Signout>((event, emit) async {
-      emit(Loading());
+      emit(AccountPageLoading());
 
       await SecureStorageController.clearLocalStorage().then(
         (value) async {

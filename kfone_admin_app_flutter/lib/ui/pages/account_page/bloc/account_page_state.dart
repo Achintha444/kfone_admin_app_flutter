@@ -7,9 +7,9 @@ abstract class AccountPageState extends Equatable {
   List<Object> get props => [];
 }
 
-class Initial extends AccountPageState {}
+class AccountPageInitial extends AccountPageState {}
 
-class Loading extends AccountPageState {}
+class AccountPageLoading extends AccountPageState {}
 
 class UserInfoSucess extends AccountPageState {
   final User user;

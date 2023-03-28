@@ -68,7 +68,7 @@ class AccountPage extends StatelessWidget {
         },
         child: BlocBuilder<AccountPageBloc, AccountPageState>(
           builder: (context, state) {
-            if (state is Initial || state is Loading) {
+            if (state is AccountPageInitial || state is AccountPageLoading) {
               return const CircularProgressIndicator();
             } else if (state is UserInfoSucess) {
               return Profile(
@@ -83,6 +83,7 @@ class AccountPage extends StatelessWidget {
           },
         ),
       ),
+    
     );
   }
 

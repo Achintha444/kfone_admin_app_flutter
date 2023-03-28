@@ -17,7 +17,7 @@ abstract class DrawerState extends Equatable {
   List<Object> get props => [drawerItem];
 }
 
-class Initial extends HomePageState {}
+class HomePageInitial extends HomePageState {}
 
 class Loading extends HomePageState {}
 
