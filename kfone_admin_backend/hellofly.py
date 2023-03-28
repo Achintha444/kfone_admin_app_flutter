@@ -1,21 +1,19 @@
-import uuid
-
-from flask import Flask
-import jwt
-import requests
-from functools import wraps
-from flask import request, abort, jsonify, make_response
-from typing import List
 import base64
 import json
-from enum import Enum
-from cryptography.hazmat.primitives.asymmetric import rsa, ec
-from cryptography.hazmat.primitives import serialization
-from cryptography.hazmat.backends import default_backend
+import uuid
 from collections import OrderedDict
+from enum import Enum
+from functools import wraps
+from typing import List
+
+import jwt
+import requests
+from flask import Flask, abort, jsonify, make_response, request
+from jwt import PyJWKClient
 
 app = Flask(__name__)
 
+asgardeo_public_key = None
 JWKS_URL = 'https://api.asgardeo.io/t/kfonebusiness/oauth2/jwks'
 AUD = "obioKxDGAAxKeSlXrtnDBEWdkWYa"
 
@@ -133,26 +131,13 @@ def requires_auth(f):
             abort(get_unauthorized_response())
 
         token = authz_header.split()[1]
-        decoded_token = None
         if not token:
             abort(get_unauthorized_response())  # Unauthorized
 
         try:
-            # Get the JWT header and extract the kid
-            # jwt_header = jwt.get_unverified_header(token.split()[1])
-            jwt_header = jwt.get_unverified_header(token)
-            kid = jwt_header['kid']
-
-            # Get the JWKS from the JWKS endpoint and find the public key for the kid
-            jwks = get_jwks(JWKS_URL)
-            public_key = None
-            for jwk in jwks['keys']:
-                if jwk['kid'] == kid:
-                    public_key = jwk_to_public_key(jwk)
-                    break
-
+            public_key = get_public_key(token)
             # Decode JWT access token and verify signature using the public key
-            decoded_token = jwt.decode(token, public_key, algorithms=['RS256'], audience=AUD, verify=True)
+            jwt.decode(token, public_key, algorithms=['RS256'], audience=AUD, verify=True)
         except:
             abort(401)  # Unauthorized
 
@@ -160,6 +145,16 @@ def requires_auth(f):
 
     return decorated
 
+def get_public_key(token):
+
+    global asgardeo_public_key
+    if asgardeo_public_key is not None:
+        return asgardeo_public_key
+     
+    jwks_client = PyJWKClient(JWKS_URL)
+    signing_key = jwks_client.get_signing_key_from_jwt(token)
+    asgardeo_public_key = signing_key.key
+    return asgardeo_public_key
 
 def authorize(required_scopes):
     def decorator(func):
@@ -401,7 +396,7 @@ def add_customer():
     return jsonify({'customer': "oops"}), 201
 
 
-@app.route('/customers/<string:customer_id>', methods=['PUT', 'PATCH'])
+@app.route('/customers/<string:customer_id>', methods=['PATCH'])
 @requires_auth
 @authorize(required_scopes=['customers_modify'])
 def update_customer(customer_id):
@@ -424,58 +419,6 @@ def update_customer(customer_id):
     #     device.promo_id = device_data['promo_id']
 
     return jsonify({'device': customer.__dict__}), 200
-
-
-
-# Helper function to get JWKS from the JWKS endpoint
-def get_jwks(jwks_url):
-    response = requests.get(jwks_url)
-    return response.json()
-
-
-def jwk_to_public_key(jwk):
-    """
-    Convert a JWK to a public key in PEM format.
-
-    Args:
-        jwk (dict): JSON Web Key containing the public key information.
-
-    Returns:
-        bytes: The public key in PEM format.
-
-    Raises:
-        ValueError: If the JWK is invalid or if the key type is not supported.
-    """
-
-    # Validate JWK
-    if not isinstance(jwk, dict):
-        raise ValueError('Invalid JWK: JWK must be a dictionary')
-    if jwk.get('kty') not in ['RSA', 'EC']:
-        raise ValueError(f"Invalid JWK: Unsupported key type '{jwk.get('kty')}'")
-
-    # Get public key parameters
-    if jwk['kty'] == 'RSA':
-        n = int.from_bytes(base64.urlsafe_b64decode(jwk['n'] + '=='), 'big')
-        e = int.from_bytes(base64.urlsafe_b64decode(jwk['e'] + '=='), 'big')
-        public_key = rsa.RSAPublicNumbers(e, n).public_key(default_backend())
-    else:
-        if jwk['crv'] != 'P-256':
-            raise ValueError(f"Invalid JWK: Unsupported curve '{jwk['crv']}'")
-        x = int.from_bytes(base64.urlsafe_b64decode(jwk['x'] + '=='), 'big')
-        y = int.from_bytes(base64.urlsafe_b64decode(jwk['y'] + '=='), 'big')
-        public_key = ec.EllipticCurvePublicNumbers(
-            x=x,
-            y=y,
-            curve=ec.SECP256R1()
-        ).public_key(default_backend())
-
-    # Serialize public key to PEM format
-    pem = public_key.public_bytes(
-        encoding=serialization.Encoding.PEM,
-        format=serialization.PublicFormat.SubjectPublicKeyInfo
-    )
-
-    return pem
 
 if __name__ == '__main__':
     app.run(port=3000)
