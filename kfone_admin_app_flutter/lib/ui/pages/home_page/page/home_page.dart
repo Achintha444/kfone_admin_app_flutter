@@ -195,7 +195,7 @@ class HomePage extends StatelessWidget {
         } else if (state is DevicesInterface) {
           return DevicesPage(drawerItem: state.drawerItem);
         } else if (state is PromotionsInterface) {
-          return const PromotionsPage();
+          return PromotionsPage(drawerItem: state.drawerItem);
         } else if (state is CustomersInterface) {
           return const CustomersPage();
         } else if (state is SalesTrendsInterface) {

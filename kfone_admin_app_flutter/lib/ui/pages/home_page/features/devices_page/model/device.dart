@@ -24,7 +24,7 @@ class Device extends Equatable {
   @override
   List<Object?> get props => [id, name, imageUri, qty, description, price, promos];
 
-  /// return `User` object from a relevant json string
+  /// return `Device` object from a relevant json string
   static Device fromJsonString(String jsonString) {
     Map<String, dynamic> deviceMap = jsonDecode(jsonString);
 
