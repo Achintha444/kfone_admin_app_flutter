@@ -1,0 +1,18 @@
+{
+    "AuthorizationConfig": {
+        "BaseOrganizationUrl": "https://api.asgardeo.io/t/flutterconnect",
+        "ClientId": "WkvjPecCHwNz6AagZa0WSHsuPpEa",
+        "Scopes": [
+            "openid",
+            "email",
+            "profile",
+            "internal_login"
+        ]
+    },
+    "LoginCallbackUrl": "com.wso2.kfone.admin.app://login-callback",
+    "LocalStoreKey": {
+        "AccessToken": "com.wso2.kfone.admin.app_access_token",
+        "IdToken": "com.wso2.kfone.admin.app_id_token",
+        "AccessTokenExpirationDateTime": "com.wso2.kfone.admin.app_access_token_expiration_date_time"
+    }
+}
