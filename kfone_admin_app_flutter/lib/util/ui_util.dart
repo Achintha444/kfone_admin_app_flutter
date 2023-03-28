@@ -17,4 +17,13 @@ abstract class UiUtil {
   static SnackBar getSnackBar(message) {
     return SnackBar(content: Text(message));
   }
+
+  /// compare two lists and return true if one of the list has all the elements of the other list
+  static bool compareLists(List list1, List list2) {
+    if(list2.every((element) => list1.contains(element))) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }

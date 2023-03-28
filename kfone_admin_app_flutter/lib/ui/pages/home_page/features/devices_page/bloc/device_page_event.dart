@@ -7,4 +7,11 @@ abstract class DevicePageEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class GetDevices extends DevicePageEvent {}
+class GetDevices extends DevicePageEvent {
+  final DrawerItem drawerItem;
+
+  const GetDevices({required this.drawerItem});
+
+  @override
+  List<Object> get props => [drawerItem];
+}

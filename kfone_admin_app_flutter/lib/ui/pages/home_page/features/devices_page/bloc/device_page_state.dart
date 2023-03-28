@@ -13,6 +13,8 @@ class DevicePageLoading extends DevicePageState {}
 
 class DevicePageError extends DevicePageState {}
 
+class DevicePageUnauthorized extends DevicePageState {}
+
 class GetDevicesSucess extends DevicePageState {
   final List<Device> devices;
 

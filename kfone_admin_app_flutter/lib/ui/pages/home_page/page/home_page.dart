@@ -107,8 +107,7 @@ class HomePage extends StatelessWidget {
       future: Future.wait([UserDetailsController.getUserScopes(), item.scopes]),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          if (snapshot.data![1]
-              .every((scope) => snapshot.data![0].contains(scope))) {
+           if(UiUtil.compareLists(snapshot.data![0], snapshot.data![1])) {
             return ListTile(
               leading: Icon(item.icon),
               title: Text(item.itemName),
@@ -194,7 +193,7 @@ class HomePage extends StatelessWidget {
             child: CircularProgressIndicator(),
           );
         } else if (state is DevicesInterface) {
-          return const DevicesPage();
+          return DevicesPage(drawerItem: state.drawerItem);
         } else if (state is PromotionsInterface) {
           return const PromotionsPage();
         } else if (state is CustomersInterface) {
