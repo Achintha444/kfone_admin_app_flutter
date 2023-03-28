@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -18,20 +20,24 @@ class _DeviceAddPageState extends State<DeviceAddPage> {
 
   void _submitForm() async {
     if (_formKey.currentState!.validate()) {
-      final url = 'https://yourbackend.com/yourendpoint';
-      final response = await http.post(Uri.parse(url), body: {
-        'field1': _controller1.text,
-        'field2': _controller2.text,
-        'field3': _controller3.text,
-        'field4': _controller4.text,
-        'field5': _controller5.text,
+      final url = 'https://divine-snowflake-5579.fly.dev/devices';
+      final headers = {'Authorization': 'Bearer <token>',
+        'Content-Type': 'application/json'};
+      final body = jsonEncode({
+        'name': _controller1.text,
+        'image_uri': _controller2.text,
+        'qty': int.parse(_controller3.text),
+        'description': _controller4.text,
+        'price': double.parse(_controller5.text),
       });
+      final response = await http.post(Uri.parse(url),headers: headers, body: body);
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 201) {
         // Handle success
-        print('Data sent successfully!');
+        print('Device Added!');
       } else {
         // Handle failure
+        print(response.statusCode);
         print('Failed to send data!');
       }
     }
@@ -59,7 +65,7 @@ class _DeviceAddPageState extends State<DeviceAddPage> {
                   return null;
                 },
                 decoration: InputDecoration(
-                  labelText: 'Field 1',
+                  labelText: 'Name',
                 ),
               ),
               TextFormField(
@@ -71,7 +77,7 @@ class _DeviceAddPageState extends State<DeviceAddPage> {
                   return null;
                 },
                 decoration: InputDecoration(
-                  labelText: 'Field 2',
+                  labelText: 'Image URL',
                 ),
               ),
               TextFormField(
@@ -83,7 +89,7 @@ class _DeviceAddPageState extends State<DeviceAddPage> {
                   return null;
                 },
                 decoration: InputDecoration(
-                  labelText: 'Field 3',
+                  labelText: 'Quantity',
                 ),
               ),
               TextFormField(
@@ -95,7 +101,7 @@ class _DeviceAddPageState extends State<DeviceAddPage> {
                   return null;
                 },
                 decoration: InputDecoration(
-                  labelText: 'Field 4',
+                  labelText: 'Descpription',
                 ),
               ),
               TextFormField(
@@ -107,7 +113,7 @@ class _DeviceAddPageState extends State<DeviceAddPage> {
                   return null;
                 },
                 decoration: InputDecoration(
-                  labelText: 'Field 5',
+                  labelText: 'Price',
                 ),
               ),
               SizedBox(height: 16.0),
