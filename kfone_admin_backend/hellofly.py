@@ -430,5 +430,58 @@ def update_customer(customer_id):
 
     return jsonify({'device': customer.__dict__}), 200
 
+
+
+@app.route('/update/<string:user_id>', methods=['PATCH'])
+@requires_auth
+@authorize(required_scopes=[])
+def update_user(user_id):
+    get_token("internal_login")
+    print(ACCESS_TOKEN)
+
+    # return jsonify({'device': customer.__dict__}), 200
+    return jsonify({'message': 'Updated'}), 200
+
+
+def get__new_access_token(scopes):
+    # Define the request URL
+    url = "https://api.asgardeo.io/t/kfonebusiness/oauth2/token"
+
+    # Define the request headers
+    headers = {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Authorization": f"Basic {base64.b64encode(f'{ADMIN_CLIENT_ID}:{ADMIN_CLIENT_SECRET}'.encode()).decode()}"
+    }
+
+    # Define the request body
+    data = {
+        "grant_type": "client_credentials",
+        "scope": f"{scopes}"
+    }
+
+    # Send the request and retrieve the response
+    response = requests.post(url, headers=headers, data=data)
+
+    # Check if the response was successful
+    if response.status_code == 200:
+        # Retrieve the access token from the response body
+        access_token = response.json()["access_token"]
+
+        # Return the access token
+        ACCESS_TOKEN[scopes] = access_token
+    else:
+        # Raise an exception if the response was not successful
+        response.raise_for_status()
+
+def get_token(scopes):
+    if scopes in ACCESS_TOKEN:
+        decoded_token = jwt.decode(ACCESS_TOKEN[scopes], options={"verify_signature": False})
+        if decoded_token['exp'] < time.time():
+            get__new_access_token(scopes)
+        return ACCESS_TOKEN[scopes]
+    else:
+        get__new_access_token(scopes)
+        return ACCESS_TOKEN[scopes]
+
 if __name__ == '__main__':
     app.run(port=3000)
