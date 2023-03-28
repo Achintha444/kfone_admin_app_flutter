@@ -16,10 +16,7 @@ from cryptography.hazmat.backends import default_backend
 app = Flask(__name__)
 
 JWKS_URL = 'https://api.asgardeo.io/t/kfonebusiness/oauth2/jwks'
-AUD = "g78TWkBfdMqBLDqFMQ5abdPFbyYa"
-ADMIN_GROUP = "admin"
-SALES_GROUP = "sales"
-MARKETING_GROUP = "marketing"
+AUD = "obioKxDGAAxKeSlXrtnDBEWdkWYa"
 
 
 # Device model
@@ -135,29 +132,45 @@ def requires_auth(f):
         except:
             abort(401)  # Unauthorized
 
-        return f(decoded_token, *args, **kwargs)
+        return f(*args, **kwargs)
 
     return decorated
+
+
+def authorize(required_scopes):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            token = request.headers.get('Authorization').split()[1]
+            if not token:
+                abort(401)  # Unauthorized
+
+            decoded_token = jwt.decode(token, options={"verify_signature": False})
+
+            if 'scope' not in decoded_token:
+                decoded_token['scope'] = []
+            for required_scope in required_scopes:
+                if required_scope not in decoded_token['scope']:
+                    return jsonify({'message': 'Insufficient Scopes'}), 401
+            return func(*args, **kwargs)
+
+        return wrapper
+
+    return decorator
 
 
 # API endpoints
 @app.route('/devices', methods=['GET'])
 @requires_auth
-def get_devices(decoded_token):
-    if ADMIN_GROUP not in decoded_token['groups']:
-        return jsonify({'message': 'Unauthorized'}), 403
-    # devices_dict_list = [d.__dict__ for d in devices]
-    # return jsonify({"devices": devices_dict_list})
-    # return jsonify({"devices": json.dumps(devices, cls=DeviceEncoder)})
-    # return jsonify({"devices": json.dumps(devices, cls=DeviceEncoder)})
+@authorize(required_scopes=['devices_list'])
+def get_devices():
     return json.dumps({"devices": devices}, cls=DeviceEncoder), 200, {'content-type': 'application/json'}
 
 
 @app.route('/devices/<int:device_id>', methods=['GET'])
 @requires_auth
-def get_device_by_id(decoded_token, device_id):
-    if ADMIN_GROUP not in decoded_token['groups']:
-        return jsonify({'message': 'Forbidden'}), 403
+@authorize(required_scopes=['devices_list'])
+def get_device_by_id(device_id):
     device = get_device(device_id)
     if device:
         return json.dumps(device, cls=DeviceEncoder), 200, {'content-type': 'application/json'}
@@ -168,9 +181,8 @@ def get_device_by_id(decoded_token, device_id):
 # Search device by name
 @app.route('/devices/search/<string:device_name>', methods=['GET'])
 @requires_auth
-def search_device_by_name(decoded_token, device_name):
-    if ADMIN_GROUP not in decoded_token['groups']:
-        return jsonify({'message': 'Forbidden'}), 403
+@authorize(required_scopes=['devices_list'])
+def search_device_by_name(device_name):
     device_list = []
     for device in devices:
         if device_name.lower() in device.name.lower():
@@ -180,9 +192,8 @@ def search_device_by_name(decoded_token, device_name):
 
 @app.route('/devices', methods=['POST'])
 @requires_auth
-def add_device(decoded_token):
-    if ADMIN_GROUP not in decoded_token['groups']:
-        return jsonify({'message': 'Forbidden'}), 403
+@authorize(required_scopes=['devices_add'])
+def add_device():
     device_data = request.get_json()
     device_id = len(devices) + 1
     if 'name' not in device_data or 'image_uri' not in device_data or 'qty' not in device_data or \
@@ -199,9 +210,8 @@ def add_device(decoded_token):
 
 @app.route('/devices/<int:device_id>', methods=['PUT', 'PATCH'])
 @requires_auth
-def update_device(decoded_token, device_id):
-    if ADMIN_GROUP not in decoded_token['groups']:
-        return jsonify({'message': 'Forbidden'}), 403
+@authorize(required_scopes=['devices_modify'])
+def update_device(device_id):
     device = get_device(device_id)
     if not device:
         return jsonify({'message': 'Device not found'}), 404
@@ -225,9 +235,8 @@ def update_device(decoded_token, device_id):
 
 @app.route('/devices/<int:device_id>', methods=['DELETE'])
 @requires_auth
-def delete_device(decoded_token, device_id):
-    if ADMIN_GROUP not in decoded_token['groups']:
-        return jsonify({'message': 'Forbidden'}), 403
+@authorize(required_scopes=['devices_delete'])
+def delete_device(device_id):
     device = [d for d in devices if d.device_id == device_id]
     if len(device) == 0:
         response = make_response(jsonify(message=f"Device with ID {device_id} not found"), 404)
@@ -238,18 +247,15 @@ def delete_device(decoded_token, device_id):
 
 @app.route('/promotions', methods=['GET'])
 @requires_auth
-def get_promotions(decoded_token):
-    if not any(x in ['Test', ADMIN_GROUP, SALES_GROUP] for x in decoded_token['groups']):
-        abort(403)  # Access denied
-    # return jsonify(promotions)
+@authorize(required_scopes=['promotions_list'])
+def get_promotions():
     return json.dumps({"promotions": promotions}, cls=PromotionEncoder), 200, {'content-type': 'application/json'}
 
 
 @app.route('/promotions/<int:promo_id>', methods=['GET'])
 @requires_auth
-def get_promotion_by_id(decoded_token, promo_id):
-    if not any(x in ['Test', ADMIN_GROUP, SALES_GROUP] for x in decoded_token['groups']):
-        abort(403)  # Access denied
+@authorize(required_scopes=['promotions_list'])
+def get_promotion_by_id(promo_id):
     promotion = get_promotion(promo_id)
     if promotion:
         return json.dumps(promotion, cls=PromotionEncoder), 201, {'content-type': 'application/json'}
@@ -259,9 +265,8 @@ def get_promotion_by_id(decoded_token, promo_id):
 
 @app.route('/promotions', methods=['POST'])
 @requires_auth
-def add_promotion(decoded_token):
-    if not any(x in ['Test', ADMIN_GROUP, SALES_GROUP] for x in decoded_token['groups']):
-        abort(403)  # Access denied
+@authorize(required_scopes=['promotions_add'])
+def add_promotion():
     new_promotion = request.get_json()
     new_promotion['promo_id'] = str(uuid.uuid4())  # generate new UUID for promotion ID
 
@@ -279,9 +284,8 @@ def add_promotion(decoded_token):
 
 @app.route('/promotions/<string:promo_id>', methods=['PUT', 'PATCH'])
 @requires_auth
-def update_promotion(decoded_token, promo_id):
-    if not any(x in ['Test', ADMIN_GROUP, SALES_GROUP] for x in decoded_token['groups']):
-        abort(403)  # Access denied
+@authorize(required_scopes=['promotions_modify'])
+def update_promotion(promo_id):
     promotion = get_promotion(promo_id)
     if not promotion:
         return jsonify({'message': 'Promotion not found'}), 404
@@ -299,9 +303,8 @@ def update_promotion(decoded_token, promo_id):
 
 @app.route('/promotions/<string:promo_id>', methods=['DELETE'])
 @requires_auth
-def delete_promotion(decoded_token, promo_id):
-    if not any(x in ['Test', ADMIN_GROUP, SALES_GROUP] for x in decoded_token['groups']):
-        abort(403)  # Access denied
+@authorize(required_scopes=['promotions_delete'])
+def delete_promotion(promo_id):
     promotion = [p for p in promotions if p.promo_id == promo_id]
     if len(promotion) == 0:
         abort(404, f"Promotion with ID {promo_id} not found")
@@ -313,9 +316,8 @@ def delete_promotion(decoded_token, promo_id):
 # Add promotion to device
 @app.route('/promotions/devices', methods=['POST'])
 @requires_auth
-def add_promotion_to_device(decoded_token):
-    if not any(x in ['Test', ADMIN_GROUP, SALES_GROUP] for x in decoded_token['groups']):
-        abort(403)
+@authorize(required_scopes=['promotions_modify'])
+def add_promotion_to_device():
     # "promo_id": "1",
     #   "device_ids": [
     #     1,2
@@ -339,11 +341,10 @@ def add_promotion_to_device(decoded_token):
 
 
 # Define a Flask endpoint that requires JWT access token
-@app.route('/sales_activity')
+@app.route('/sales_trends')
 @requires_auth
-def sales_activity(decoded_token):
-    if not any(x in ['Test', ADMIN_GROUP, MARKETING_GROUP] for x in decoded_token['groups']):
-        abort(403)  # Access denied
+@authorize(required_scopes=['sales_trends_view'])
+def sales_activity():
     return 'Access granted!'
 
 
@@ -397,7 +398,5 @@ def jwk_to_public_key(jwk):
 
     return pem
 
-
 # if __name__ == '__main__':
 #     app.run(port=8001)
-
