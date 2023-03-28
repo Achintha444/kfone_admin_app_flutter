@@ -1,8 +1,8 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
-class RadarChartSample1 extends StatefulWidget {
-  const RadarChartSample1({super.key});
+class RadarGraph extends StatefulWidget {
+  const RadarGraph({super.key});
 
   final gridColor = Colors.redAccent;
   final titleColor = Colors.black45;
@@ -13,10 +13,10 @@ class RadarChartSample1 extends StatefulWidget {
   final offRoadColor = Colors.pinkAccent;
 
   @override
-  State<RadarChartSample1> createState() => _RadarChartSample1State();
+  State<RadarGraph> createState() => _RadarGraphState();
 }
 
-class _RadarChartSample1State extends State<RadarChartSample1> {
+class _RadarGraphState extends State<RadarGraph> {
   int selectedDataSetIndex = -1;
   double angleValue = 0;
   bool relativeAngleMode = true;

@@ -1,8 +1,8 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
-class _LineChart extends StatelessWidget {
-  const _LineChart({required this.isShowingMainData});
+class _CurveGraph extends StatelessWidget {
+  const _CurveGraph({required this.isShowingMainData});
 
   final bool isShowingMainData;
 
@@ -286,14 +286,14 @@ class _LineChart extends StatelessWidget {
       );
 }
 
-class LineChartSample1 extends StatefulWidget {
-  const LineChartSample1({super.key});
+class CurveGraph extends StatefulWidget {
+  const CurveGraph({super.key});
 
   @override
-  State<StatefulWidget> createState() => LineChartSample1State();
+  State<StatefulWidget> createState() => CurveGraphState();
 }
 
-class LineChartSample1State extends State<LineChartSample1> {
+class CurveGraphState extends State<CurveGraph> {
   late bool isShowingMainData;
 
   @override
@@ -317,7 +317,7 @@ class LineChartSample1State extends State<LineChartSample1> {
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.only(right: 16, left: 6),
-                  child: _LineChart(isShowingMainData: isShowingMainData),
+                  child: _CurveGraph(isShowingMainData: isShowingMainData),
                 ),
               ),
               const SizedBox(

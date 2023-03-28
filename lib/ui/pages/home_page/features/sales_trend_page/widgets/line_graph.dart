@@ -1,14 +1,14 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
-class LineChartSample2 extends StatefulWidget {
-  const LineChartSample2({super.key});
+class LineGraph extends StatefulWidget {
+  const LineGraph({super.key});
 
   @override
-  State<LineChartSample2> createState() => _LineChartSample2State();
+  State<LineGraph> createState() => _LineGraphState();
 }
 
-class _LineChartSample2State extends State<LineChartSample2> {
+class _LineGraphState extends State<LineGraph> {
   List<Color> gradientColors = [
     Colors.black87,
     Colors.red,

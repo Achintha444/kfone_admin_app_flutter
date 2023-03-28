@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kfone_admin_app_flutter/ui/pages/home_page/page/home_page.dart';
+import 'package:kfone_admin_app_flutter/ui/pages/home_page/page/home_page_arguements.dart';
 
 import '../../../../util/ui_util.dart';
 import '../../../widgets/common/resizable_image.dart';
@@ -62,7 +63,11 @@ class InitialPage extends StatelessWidget {
               UiUtil.getSnackBar("Signin Failed"),
             );
           } else if (state is SigninSuccess) {
-            Navigator.pushNamed(context, HomePage.routeName);
+            Navigator.pushNamed(
+              context,
+              HomePage.routeName,
+              arguments: HomePageArguments(state.sessionToken),
+            );
             // Navigator.pushNamed(context, AccountPage.routeName,
             //     arguments:
             //         AccountPageArguments(state.sessionToken));

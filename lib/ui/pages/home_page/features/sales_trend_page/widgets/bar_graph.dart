@@ -189,14 +189,14 @@ class _BarChart extends StatelessWidget {
       ];
 }
 
-class BarChartSample3 extends StatefulWidget {
-  const BarChartSample3({super.key});
+class BarGraph extends StatefulWidget {
+  const BarGraph({super.key});
 
   @override
-  State<StatefulWidget> createState() => BarChartSample3State();
+  State<StatefulWidget> createState() => BarGraphState();
 }
 
-class BarChartSample3State extends State<BarChartSample3> {
+class BarGraphState extends State<BarGraph> {
   @override
   Widget build(BuildContext context) {
     return const AspectRatio(
