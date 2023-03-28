@@ -1,9 +1,26 @@
 import 'package:flutter/material.dart';
 
-class DrawerItem {
-  final String title;
-  final IconData icon;
-  final String route;
+enum DrawerItemTypes { devices, promotions, customers, salesTrends }
 
-  const DrawerItem({required this.title, required this.icon, required this.route});
+class DrawerItem {
+  final DrawerItemTypes type;
+  final IconData icon;
+
+  const DrawerItem(
+      {required this.type, required this.icon});
+  
+  String get itemName {
+    switch (type) {
+      case DrawerItemTypes.devices:
+        return "Devices";
+      case DrawerItemTypes.promotions:
+        return "Promotions";
+      case DrawerItemTypes.customers:
+        return "Customers";
+      case DrawerItemTypes.salesTrends:
+        return "Sales Trends";
+      default:
+        return "";
+    }
+  }
 }

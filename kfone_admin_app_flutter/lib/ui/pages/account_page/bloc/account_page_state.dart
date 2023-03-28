@@ -22,4 +22,3 @@ class UserInfoFail extends AccountPageState {}
 class SignoutSuccess extends AccountPageState {}
 
 class SignoutFail extends AccountPageState {}
-

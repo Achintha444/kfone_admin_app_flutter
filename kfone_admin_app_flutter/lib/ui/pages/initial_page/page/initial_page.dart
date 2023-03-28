@@ -68,9 +68,6 @@ class InitialPage extends StatelessWidget {
               HomePage.routeName,
               arguments: HomePageArguments(state.sessionToken),
             );
-            // Navigator.pushNamed(context, AccountPage.routeName,
-            //     arguments:
-            //         AccountPageArguments(state.sessionToken));
           }
         },
         child: BlocBuilder<InitalPageBloc, InitalPageState>(

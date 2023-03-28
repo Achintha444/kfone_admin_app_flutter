@@ -5,8 +5,8 @@ import '../widgets/table_header_widget.dart';
 import '../widgets/table_row_data.dart';
 import '../widgets/tier_chip.dart';
 
-class UsersPage extends StatelessWidget {
-  const UsersPage({super.key});
+class CustomersPage extends StatelessWidget {
+  const CustomersPage({super.key});
 
   @override
   Widget build(BuildContext context) {
