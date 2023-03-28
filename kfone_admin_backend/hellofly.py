@@ -41,10 +41,10 @@ class DeviceEncoder(json.JSONEncoder):
 
 
 class Tier(Enum):
+    NoTier = 0
     Silver = 1
     Gold = 2
     Platinum = 3
-    NoneTier = 4
 
 
 # Promotion model
@@ -102,16 +102,28 @@ def get_promotion(promo_id):
             return promotion
     return None
 
+def get_unauthorized_response(message=None):
+    if message:
+        return make_response(jsonify(message=message), 401)
+    
+    return make_response(jsonify(message=f"Unauthorized"), 401)
 
 # Define a custom Flask decorator for JWT authentication
 def requires_auth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         # Get JWT access token from the Authorization header
-        token = request.headers.get('Authorization').split()[1]
+        authz_header = request.headers.get('Authorization')
+        if not authz_header:
+            abort(get_unauthorized_response())
+
+        if len(authz_header.split()) != 2:
+            abort(get_unauthorized_response())
+
+        token = authz_header.split()[1]
         decoded_token = None
         if not token:
-            abort(401)  # Unauthorized
+            abort(get_unauthorized_response())  # Unauthorized
 
         try:
             # Get the JWT header and extract the kid
