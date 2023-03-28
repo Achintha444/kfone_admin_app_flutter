@@ -199,7 +199,7 @@ class HomePage extends StatelessWidget {
         } else if (state is CustomersInterface) {
           return const CustomersPage();
         } else if (state is SalesTrendsInterface) {
-          return const SalesTrendPage();
+          return SalesTrendPage(drawerItem: state.drawerItem);
         } else if (state is HomePageInitial || state is InitialInterface) {
           return const InitialHomePage();
         } else {

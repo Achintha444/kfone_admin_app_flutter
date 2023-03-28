@@ -18,7 +18,7 @@ class PromotionsController extends Controller {
     if (response.statusCode == 200) {
       return Promotion.fromJsonList(response.body);
     } else {
-      throw Exception('Failed to get user details');
+      throw Exception('Failed to get promotions details');
     }
   }
 }
