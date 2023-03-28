@@ -1,5 +1,6 @@
 import "dart:developer";
 import "package:flutter_appauth/flutter_appauth.dart";
+import "package:kfone_admin_app_flutter/controller/scopes_controller/scope_controller.dart";
 import "package:kfone_admin_app_flutter/util/model/session_token.dart";
 
 import "../../util/authorization_config_util.dart";
@@ -18,6 +19,9 @@ class LoginController extends Controller {
     final String redirectUrl = await AuthorizationConfigUtil.getRedirectUrl();
 
     try {
+      // add the all the scopes that is related to other interfaces
+      scopes.addAll( await ScopeController.getAllScopesOfInterfaces());
+
       final AuthorizationTokenResponse? result =
           await _flutterAppAuth.authorizeAndExchangeCode(
         AuthorizationTokenRequest(

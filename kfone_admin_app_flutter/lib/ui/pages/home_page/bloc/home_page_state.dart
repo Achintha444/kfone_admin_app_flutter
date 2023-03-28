@@ -21,6 +21,14 @@ class HomePageInitial extends HomePageState {}
 
 class Loading extends HomePageState {}
 
+class InitialInterface extends HomePageState implements DrawerState{
+  
+    @override
+    final DrawerItem drawerItem;
+  
+    const InitialInterface({required this.drawerItem});
+}
+
 class DevicesInterface extends HomePageState implements DrawerState{
   
     @override

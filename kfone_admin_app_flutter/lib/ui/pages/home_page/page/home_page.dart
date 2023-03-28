@@ -1,9 +1,11 @@
 import "package:flutter/material.dart";
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kfone_admin_app_flutter/controller/user_details_controller/user_details_controller.dart';
 import 'package:kfone_admin_app_flutter/ui/pages/account_page/bloc/account_page_bloc.dart';
 import 'package:kfone_admin_app_flutter/ui/pages/home_page/bloc/home_page_bloc.dart';
 import 'package:kfone_admin_app_flutter/ui/pages/home_page/features/customers_page/page/customers_page.dart';
 import 'package:kfone_admin_app_flutter/ui/pages/home_page/features/devices_page/page/devices_page.dart';
+import 'package:kfone_admin_app_flutter/ui/pages/home_page/features/initial_page/page/initial_home_page.dart';
 import 'package:kfone_admin_app_flutter/ui/pages/home_page/features/promotions_page/page/promotions_page.dart';
 import 'package:kfone_admin_app_flutter/ui/pages/home_page/features/sales_trend_page/page/sales_trend_page.dart';
 import 'package:kfone_admin_app_flutter/ui/pages/home_page/models/drawer_item.dart';
@@ -19,6 +21,10 @@ class HomePage extends StatelessWidget {
   static const String routeName = "/home";
 
   static const List<DrawerItem> _drawerItems = [
+    DrawerItem(
+      type: DrawerItemTypes.initial,
+      icon: Icons.home_rounded,
+    ),
     DrawerItem(
       type: DrawerItemTypes.devices,
       icon: Icons.devices_rounded,
@@ -47,7 +53,6 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     final HomePageArguments args =
         ModalRoute.of(context)!.settings.arguments as HomePageArguments;
 
@@ -79,28 +84,45 @@ class HomePage extends StatelessWidget {
                   decoration: const BoxDecoration(
                     color: Colors.redAccent,
                   ), //BoxDecoration
-                  child: _buildUserHeader(context, args.sessionToken), //UserAccountDrawerHeader
+                  child: _buildUserHeader(
+                      context, args.sessionToken), //UserAccountDrawerHeader
                 );
               }
 
               DrawerItem item = _drawerItems[index - 1];
 
-              return ListTile(
-                leading: Icon(item.icon),
-                title: Text(item.itemName),
-                onTap: () {
-                  context
-                      .read<HomePageBloc>()
-                      .add(NavigateDrawer(drawerItem: item));
-                  Navigator.pop(context);
-                },
-              );
+              return _checkScopesForDrawerItemWidget(item);
             },
           ),
         ),
         body: _buildBody(context),
         floatingActionButton: _buildAddResourceFloatingButton(context),
       ),
+    );
+  }
+
+  FutureBuilder<List<List<String>>> _checkScopesForDrawerItemWidget(
+      DrawerItem item) {
+    return FutureBuilder(
+      future: Future.wait([UserDetailsController.getUserScopes(), item.scopes]),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          if (snapshot.data![1]
+              .every((scope) => snapshot.data![0].contains(scope))) {
+            return ListTile(
+              leading: Icon(item.icon),
+              title: Text(item.itemName),
+              onTap: () {
+                context
+                    .read<HomePageBloc>()
+                    .add(NavigateDrawer(drawerItem: item));
+                Navigator.pop(context);
+              },
+            );
+          }
+        }
+        return Container();
+      },
     );
   }
 
@@ -153,8 +175,10 @@ class HomePage extends StatelessWidget {
           return Text(state.drawerItem.itemName);
         } else if (state is CustomersInterface) {
           return Text(state.drawerItem.itemName);
-        } else if (state is HomePageInitial || state is SalesTrendsInterface) {
-          return const Text("Sales Trends");
+        } else if (state is SalesTrendsInterface) {
+          return Text(state.drawerItem.itemName);
+        } else if (state is HomePageInitial || state is InitialInterface) {
+          return const Text("Home");
         } else {
           return Container();
         }
@@ -175,8 +199,10 @@ class HomePage extends StatelessWidget {
           return const PromotionsPage();
         } else if (state is CustomersInterface) {
           return const CustomersPage();
-        } else if (state is HomePageInitial || state is SalesTrendsInterface) {
+        } else if (state is SalesTrendsInterface) {
           return const SalesTrendPage();
+        } else if (state is HomePageInitial || state is InitialInterface) {
+          return const InitialHomePage();
         } else {
           return Container();
         }
@@ -184,7 +210,8 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  BlocBuilder<HomePageBloc, HomePageState> _buildAddResourceFloatingButton(BuildContext context) {
+  BlocBuilder<HomePageBloc, HomePageState> _buildAddResourceFloatingButton(
+      BuildContext context) {
     return BlocBuilder<HomePageBloc, HomePageState>(
       builder: (context, state) {
         if (state is DevicesInterface) {

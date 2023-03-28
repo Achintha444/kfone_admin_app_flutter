@@ -1,5 +1,6 @@
 
 import 'package:flutter/services.dart';
+import 'package:jwt_decode/jwt_decode.dart';
 import 'package:kfone_admin_app_flutter/util/model/session_token.dart';
 
 import './common.dart';
@@ -69,6 +70,14 @@ abstract class AuthorizationConfigUtil {
     return accessToken;
   }
 
+  /// decode the access token
+  static Map<String, dynamic> decodeAccessToken(String? accessToken){
+    if(accessToken != null) {
+      return Jwt.parseJwt(accessToken);
+    }
+    return {};
+  }
+
   /// get the ID token from the `SessionToken`
   static String getIdToken(
       SessionToken sessionToken) {
@@ -79,6 +88,14 @@ abstract class AuthorizationConfigUtil {
     }
 
     return idToken;
+  }
+
+    /// decode the access token
+  static Map<String, dynamic> decodeIdToken(String? idToken){
+    if(idToken != null) {
+      return Jwt.parseJwt(idToken);
+    }
+    return {};
   }
 
   /// get the access token expiration date time from the `SessionToken`
