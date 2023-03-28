@@ -1,11 +1,11 @@
 import "package:flutter/material.dart";
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kfone_admin_app_flutter/ui/widgets/common/error_page.dart';
 
 import '../../../../util/ui_util.dart';
 import '../../initial_page/page/initial_page.dart';
 import '../bloc/account_page_bloc.dart';
 import '../widgets/profile.dart';
-import '../widgets/profile_error.dart';
 import 'account_page_arguments.dart';
 
 class AccountPage extends StatelessWidget {
@@ -76,15 +76,18 @@ class AccountPage extends StatelessWidget {
                 sessionToken: args.sessionToken,
               );
             } else {
-              return ProfileError(
-                sessionToken: args.sessionToken,
+              return ErrorPage(
+                buttonText: 'Try Again',
+                onPressed: () {
+                  context.read<AccountPageBloc>().add(
+                        GetUserInfo(sessionToken: args.sessionToken),
+                      );
+                },
               );
             }
           },
         ),
       ),
-    
     );
   }
-
 }

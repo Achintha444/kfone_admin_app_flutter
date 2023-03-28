@@ -1,12 +1,13 @@
 {
     "AuthorizationConfig": {
-        "BaseOrganizationUrl": "https://api.asgardeo.io/t/flutterconnect",
+        "BaseOrganizationUrl": "https://api.asgardeo.io/t/kfonebusiness",
         "ClientId": "obioKxDGAAxKeSlXrtnDBEWdkWYa",
         "Scopes": [
             "openid",
             "email",
             "profile"
-        ]
+        ],
+        "APIBaseUrl": "https://divine-snowflake-5579.fly.dev"
     },
     "LoginCallbackUrl": "com.wso2.kfone.admin.app://login-callback",
     "LocalStoreKey": {

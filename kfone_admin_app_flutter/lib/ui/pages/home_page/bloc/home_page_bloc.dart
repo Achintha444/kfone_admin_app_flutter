@@ -23,6 +23,9 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
         case DrawerItemTypes.salesTrends:
           emit(SalesTrendsInterface(drawerItem: event.drawerItem));
           break;
+        case DrawerItemTypes.initial:
+          emit(InitialInterface(drawerItem: event.drawerItem));
+          break;
       }
     });
   }

@@ -1,0 +1,11 @@
+{
+    "DevicesInterface" : {
+        "scopes" : [ "devices_modify", "devices_list", "devices_delete", "devices_add" ]
+    },
+    "PermissionsInterface" : {
+        "scopes" : [ "promotions_add", "promotions_modify", "promotions_list", "promotions_delete" ]
+    },
+    "SalesTrendsInterface" : {
+        "scopes" : [ "sales_trends_view" ]
+    }
+}
