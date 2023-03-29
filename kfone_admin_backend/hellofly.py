@@ -2,6 +2,7 @@ import time
 import base64
 import json
 import uuid
+import os
 from collections import OrderedDict
 from enum import Enum
 from functools import wraps
@@ -18,7 +19,7 @@ asgardeo_public_key = None
 JWKS_URL = 'https://api.asgardeo.io/t/kfonebusiness/oauth2/jwks'
 AUD = "obioKxDGAAxKeSlXrtnDBEWdkWYa"
 ADMIN_CLIENT_ID = "dcVj3Rg8kgO8JBr7pj656qvHmpEa"
-ADMIN_CLIENT_SECRET = "3SAUmmtCC4W_15yMewpSdjP883oa"
+ADMIN_CLIENT_SECRET = os.getenv("ADMIN_CLIENT_SECRET")
 ACCESS_TOKEN = {}
 
 
@@ -75,22 +76,13 @@ class PromotionEncoder(json.JSONEncoder):
             return data
         return super().default(obj)
 
-
-# uuid sample value2 
-# Sample data
-# devices = [
-#     Device("c9912c06-0a57-4812-89cb-8322c90fb3e5", 'iPhone 14 Pro Max', 'image1.png', 15, 'Description 1', 100, [1, 2]),
-#     Device("d4e2c72a-1785-454b-ae90-4796859f85d4", 'Samsung Galaxy S22 Ultra', 'image2.png', 5, 'Description 2', 200, [2, 3]),
-#     Device("8c4dd076-e817-4969-a4fa-e33a28023d83", 'Google Pixel 7 Pro', 'image3.png', 8, 'Description 3', 200)
-# ]
-
 devices = OrderedDict({
     "c9912c06-0a57-4812-89cb-8322c90fb3e5": Device("c9912c06-0a57-4812-89cb-8322c90fb3e5", 'iPhone 14 Pro Max',
-                                                   'image1.png', 15, 'Description 1', 100, [1, 2]),
+                                                   'https://www.dialog.lk/dialogdocroot/content/images/devices/samsung-galaxy-ultra-black-med.jpg', 15, 'Description 1', 100, [1, 2]),
     "d4e2c72a-1785-454b-ae90-4796859f85d4": Device("d4e2c72a-1785-454b-ae90-4796859f85d4", 'Samsung Galaxy S22 Ultra',
-                                                   'image2.png', 5, 'Description 2', 200, [2, 3]),
+                                                   'https://www.dialog.lk/dialogdocroot/content/images/devices/samsung-galaxy-ultra-black-med.jpg', 5, 'Description 2', 200, [2, 3]),
     "8c4dd076-e817-4969-a4fa-e33a28023d83": Device("8c4dd076-e817-4969-a4fa-e33a28023d83", 'Google Pixel 7 Pro',
-                                                   'image3.png', 8, 'Description 3', 200)
+                                                   'https://www.dialog.lk/dialogdocroot/content/images/devices/samsung-galaxy-ultra-black-med.jpg', 8, 'Description 3', 200)
 })
 
 promotions = [
