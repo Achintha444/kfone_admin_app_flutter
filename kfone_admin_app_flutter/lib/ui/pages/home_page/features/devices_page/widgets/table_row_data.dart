@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kfone_admin_app_flutter/ui/widgets/common/resizable_image.dart';
 
 DataRow tableRowData(String name, String imageUrl) {
   return DataRow(
@@ -7,8 +8,12 @@ DataRow tableRowData(String name, String imageUrl) {
       DataCell(
         Image.network(
           imageUrl,
-          scale: 1,
           height: 50,
+          errorBuilder: (context, error, stackTrace) => const ResizableImage(
+            fit: BoxFit.fitHeight,
+            imageLocation: 'assets/images/no_image.jpeg',
+            height: 50,
+          ),
         ),
       ),
       const DataCell(
