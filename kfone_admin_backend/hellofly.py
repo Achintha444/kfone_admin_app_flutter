@@ -85,13 +85,13 @@ class PromotionEncoder(json.JSONEncoder):
 
 devices = OrderedDict({
     "c9912c06-0a57-4812-89cb-8322c90fb3e5": Device("c9912c06-0a57-4812-89cb-8322c90fb3e5", 'iPhone 14 Pro Max',
-                                                   'https://www.dialog.lk/dialogdocroot/content/images/devices/samsung-galaxy-ultra-black-med.jpg',
+                                                   'https://www.dialog.lk/dialogdocroot/content/images/devices/iphone14pro-deeppurple.png',
                                                    15, 'Description 1', 100, [1, 2]),
     "d4e2c72a-1785-454b-ae90-4796859f85d4": Device("d4e2c72a-1785-454b-ae90-4796859f85d4", 'Samsung Galaxy S22 Ultra',
                                                    'https://www.dialog.lk/dialogdocroot/content/images/devices/samsung-galaxy-ultra-black-med.jpg',
                                                    5, 'Description 2', 200, [2, 3]),
     "8c4dd076-e817-4969-a4fa-e33a28023d83": Device("8c4dd076-e817-4969-a4fa-e33a28023d83", 'Google Pixel 7 Pro',
-                                                   'https://www.dialog.lk/dialogdocroot/content/images/devices/samsung-galaxy-ultra-black-med.jpg',
+                                                   'https://fdn2.gsmarena.com/vv/bigpic/google-pixel7-pro-new.jpg',
                                                    8, 'Description 3', 200)
 })
 
