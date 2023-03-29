@@ -3,6 +3,7 @@ import base64
 import json
 import uuid
 import os
+import configparser
 from collections import OrderedDict
 from enum import Enum
 from functools import wraps
@@ -15,10 +16,15 @@ from jwt import PyJWKClient
 
 app = Flask(__name__)
 
+config = configparser.ConfigParser()
+config.read('resources/config.ini')
+ORG_NAME = config['ASGARDEO']['ORGANIZATION']
+CUSTOMER_GROUP_ID = config['ASGARDEO']['CUSTOMER_GROUP_ID']
+
 asgardeo_public_key = None
-JWKS_URL = 'https://api.asgardeo.io/t/kfonebusiness/oauth2/jwks'
-AUD = "obioKxDGAAxKeSlXrtnDBEWdkWYa"
-ADMIN_CLIENT_ID = "dcVj3Rg8kgO8JBr7pj656qvHmpEa"
+JWKS_URL = f"https://api.asgardeo.io/t/{ORG_NAME}/oauth2/jwks"
+AUD = config['ASGARDEO']['AUDIENCE']
+ADMIN_CLIENT_ID = config['ASGARDEO']['ADMIN_CLIENT_ID']
 ADMIN_CLIENT_SECRET = os.getenv("ADMIN_CLIENT_SECRET")
 ACCESS_TOKEN = {}
 
@@ -448,7 +454,7 @@ def update_user(user_id):
 
 def get__new_access_token(scopes):
     # Define the request URL
-    url = "https://api.asgardeo.io/t/kfonebusiness/oauth2/token"
+    url = f"https://api.asgardeo.io/t/{ORG_NAME}/oauth2/token"
 
     # Define the request headers
     headers = {
@@ -489,7 +495,7 @@ def get_token(scopes):
 
 
 def update_user(user_id, token, full_name):
-    url = f"https://api.asgardeo.io/t/kfonebusiness/scim2/Users/{user_id}"
+    url = f"https://api.asgardeo.io/t/{ORG_NAME}/scim2/Users/{user_id}"
     headers = {
         "Authorization": f"Bearer {token}",
         "Content-Type": "application/json"
@@ -518,7 +524,7 @@ def update_user(user_id, token, full_name):
 
 
 def add_client(token, email, first_name, last_name):
-    url = "https://api.asgardeo.io/t/kfonebusiness/scim2/Users"
+    url = f"https://api.asgardeo.io/t/{ORG_NAME}/scim2/Users"
     headers = {
         "Authorization": f"Bearer {token}",
         "Content-Type": "application/json"
@@ -554,7 +560,7 @@ def add_client(token, email, first_name, last_name):
 
 
 def add_user_to_group(token, email, user_id):
-    url = 'https://api.asgardeo.io/t/kfonebusiness/scim2/Groups/3f6f5201-e24d-4a6e-a527-240c5c040f43'  # Replace {group_id} with the actual group ID
+    url = f"https://api.asgardeo.io/t/{ORG_NAME}/scim2/Groups/{CUSTOMER_GROUP_ID}"  # Replace {group_id} with the actual group ID
     headers = {
         'Content-Type': 'application/json',
         'Authorization': f'Bearer f"{token}'  # Replace {access_token} with the actual access token
@@ -580,5 +586,5 @@ def add_user_to_group(token, email, user_id):
     else:
         response.raise_for_status()
 
-# if __name__ == '__main__':
-#     app.run(port=3000)
+if __name__ == '__main__':
+    app.run(port=3000)
