@@ -61,7 +61,16 @@ class HomePage extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<HomePageBloc>(
-          create: (BuildContext context) => HomePageBloc(),
+          create: (BuildContext context) => HomePageBloc()
+            ..add(
+              NavigateDrawer(
+                drawerItem: args.drawerItem ??
+                    const DrawerItem(
+                      type: DrawerItemTypes.initial,
+                      icon: Icons.home_rounded,
+                    ),
+              ),
+            ),
         ),
         BlocProvider<AccountPageBloc>(
           create: (BuildContext context) => AccountPageBloc()
@@ -98,7 +107,7 @@ class HomePage extends StatelessWidget {
           ),
         ),
         body: _buildBody(context),
-        floatingActionButton: _buildAddResourceFloatingButton(context),
+        floatingActionButton: _buildAddResourceFloatingButton(context, args),
       ),
     );
   }
@@ -212,7 +221,7 @@ class HomePage extends StatelessWidget {
   }
 
   BlocBuilder<HomePageBloc, HomePageState> _buildAddResourceFloatingButton(
-      BuildContext context) {
+      BuildContext context, HomePageArguments arguments) {
     return BlocBuilder<HomePageBloc, HomePageState>(
       builder: (context, state) {
         if (state is DevicesInterface) {
@@ -222,7 +231,10 @@ class HomePage extends StatelessWidget {
               Navigator.pushNamed(
                 context,
                 DeviceAddPage.routeName,
-                arguments: DeviceAddPageArguments(state.drawerItem),
+                arguments: DeviceAddPageArguments(
+                  state.drawerItem,
+                  arguments.sessionToken,
+                ),
               );
             },
           );
@@ -233,7 +245,10 @@ class HomePage extends StatelessWidget {
               Navigator.pushNamed(
                 context,
                 DeviceAddPage.routeName,
-                arguments: DeviceAddPageArguments(state.drawerItem)
+                arguments: DeviceAddPageArguments(
+                  state.drawerItem,
+                  arguments.sessionToken,
+                ),
               );
             },
           );
@@ -244,7 +259,10 @@ class HomePage extends StatelessWidget {
               Navigator.pushNamed(
                 context,
                 DeviceAddPage.routeName,
-                arguments: DeviceAddPageArguments(state.drawerItem)
+                arguments: DeviceAddPageArguments(
+                  state.drawerItem,
+                  arguments.sessionToken,
+                ),
               );
             },
           );

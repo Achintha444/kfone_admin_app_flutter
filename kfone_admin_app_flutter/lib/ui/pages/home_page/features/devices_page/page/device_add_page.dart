@@ -6,6 +6,8 @@ import '../../../../../../util/ui_util.dart';
 import '../../../../../widgets/common/error_page.dart';
 import '../../../../../widgets/common/unauthorized_widget.dart';
 import '../../../bloc/home_page_bloc.dart';
+import '../../../page/home_page.dart';
+import '../../../page/home_page_arguements.dart';
 import '../bloc/device_page_bloc.dart';
 
 class DeviceAddPage extends StatelessWidget {
@@ -37,37 +39,10 @@ class DeviceAddPage extends StatelessWidget {
             price: price,
           ),
         );
-
-    // if (_formKey.currentState!.validate()) {
-    //   final url = 'https://divine-snowflake-5579.fly.dev/devices';
-    //   final headers = {
-    //     'Authorization': 'Bearer <token>',
-    //     'Content-Type': 'application/json'
-    //   };
-    //   final body = jsonEncode({
-    //     'name': _nameController.text,
-    //     'image_uri': _imageUriController.text,
-    //     'qty': int.parse(_qtyController.text.toString()),
-    //     'description': _descriptionController.text,
-    //     'price': double.parse(_priceController.text.toString()),
-    //   });
-    //   final response =
-    //       await http.post(Uri.parse(url), headers: headers, body: body);
-
-    //   if (response.statusCode == 201) {
-    //     // Handle success
-    //     print('Device Added!');
-    //   } else {
-    //     // Handle failure
-    //     print(response.statusCode);
-    //     print('Failed to send data!');
-    //   }
-    // }
   }
 
   @override
   Widget build(BuildContext context) {
-    
     final DeviceAddPageArguments args =
         ModalRoute.of(context)!.settings.arguments as DeviceAddPageArguments;
 
@@ -94,7 +69,7 @@ class DeviceAddPage extends StatelessWidget {
               if (state is HomePageInitial || state is Loading) {
                 return const Center(child: CircularProgressIndicator());
               } else if (state is Authorized) {
-                return _createBody();
+                return _createBody(args);
               } else if (state is Unauthorized) {
                 return const UnauthorizedWidget();
               } else {
@@ -110,12 +85,20 @@ class DeviceAddPage extends StatelessWidget {
     );
   }
 
-  BlocListener<DevicePageBloc, DevicePageState> _createBody() {
+  BlocListener<DevicePageBloc, DevicePageState> _createBody(
+      DeviceAddPageArguments arguments) {
     return BlocListener<DevicePageBloc, DevicePageState>(
       listener: (context, state) {
         if (state is CreateDeviceSuccess) {
           ScaffoldMessenger.of(context).showSnackBar(
             UiUtil.getSnackBar("Device Created Successfully"),
+          );
+
+          Navigator.pushNamed(
+            context,
+            HomePage.routeName,
+            arguments: HomePageArguments(arguments.sessionToken,
+                drawerItem: arguments.drawerItem),
           );
         } else if (state is DevicePageError) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -126,7 +109,7 @@ class DeviceAddPage extends StatelessWidget {
       child: BlocBuilder<DevicePageBloc, DevicePageState>(
           builder: (context, state) {
         if (state is DevicePageLoading) {
-          return const Center(child: CircularProgressIndicator(color: Colors.amber,));
+          return const Center(child: CircularProgressIndicator());
         } else {
           return Form(
             key: _formKey,

@@ -19,7 +19,7 @@ class DevicesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
-       providers: [
+      providers: [
         BlocProvider<HomePageBloc>(
           create: (BuildContext context) => HomePageBloc()
             ..add(
@@ -33,12 +33,12 @@ class DevicesPage extends StatelessWidget {
             ),
         ),
       ],
-      child: BlocBuilder<HomePageBloc, HomePageState>(
-          builder: (context, state) {
+      child:
+          BlocBuilder<HomePageBloc, HomePageState>(builder: (context, state) {
         if (state is HomePageInitial || state is Loading) {
           return const Center(child: CircularProgressIndicator());
         } else if (state is Authorized) {
-           return _createBody();
+          return _createBody();
         } else if (state is Unauthorized) {
           return const UnauthorizedWidget();
         } else {
@@ -51,23 +51,28 @@ class DevicesPage extends StatelessWidget {
     );
   }
 
-  BlocBuilder<DevicePageBloc, DevicePageState> _createBody() {
-    return BlocBuilder<DevicePageBloc, DevicePageState>(
-        builder: (context, state) {
-      if (state is DevicePageInitial || state is DevicePageLoading) {
-        return const Center(child: CircularProgressIndicator());
-      } else if (state is GetDevicesSucess) {
-        return DevicesTable(
-          devices: state.devices,
-        );
-      } else {
-        return ErrorPage(
-          buttonText: 'Try Again',
-          onPressed: () {},
-        );
-      }
-    });
+  BlocListener<DevicePageBloc, DevicePageState> _createBody() {
+    return BlocListener<DevicePageBloc, DevicePageState>(
+      listener: (context, state) {
+        if(state is CreateDeviceSuccess) {
+          context.read<DevicePageBloc>().add(GetDevices());
+        }
+      },
+      child: BlocBuilder<DevicePageBloc, DevicePageState>(
+          builder: (context, state) {
+        if (state is DevicePageInitial || state is DevicePageLoading) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (state is GetDevicesSucess) {
+          return DevicesTable(
+            devices: state.devices.reversed.toList(),
+          );
+        } else {
+          return ErrorPage(
+            buttonText: 'Try Again',
+            onPressed: () {},
+          );
+        }
+      }),
+    );
   }
-
-
 }
