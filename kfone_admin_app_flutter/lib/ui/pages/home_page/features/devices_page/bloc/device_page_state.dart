@@ -29,3 +29,5 @@ class GetDevicesSucess extends DevicePageState {
 class CreateDeviceSuccess extends DevicePageState {}
 
 class UpdateDeviceSuccess extends DevicePageState {}
+
+class DeleteDeviceSuccess extends DevicePageState {}

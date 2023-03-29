@@ -49,7 +49,7 @@ abstract class HttpCall {
     return response;
   }
 
-    /// common authroization call
+  /// common authroization call
   static Future<http.Response> putCall(
       String accessToken, String url, Object body) async {
     final response = await http.patch(
@@ -61,6 +61,22 @@ abstract class HttpCall {
         'Content-Type': 'application/json'
       },
       body: body,
+    );
+
+    return response;
+  }
+
+  /// common authroization call
+  static Future<http.Response> deleteCall(
+      String accessToken, String url) async {
+    final response = await http.delete(
+      Uri.parse(
+        url,
+      ),
+      headers: {
+        'Authorization': 'Bearer $accessToken',
+        'Content-Type': 'application/json'
+      }
     );
 
     return response;

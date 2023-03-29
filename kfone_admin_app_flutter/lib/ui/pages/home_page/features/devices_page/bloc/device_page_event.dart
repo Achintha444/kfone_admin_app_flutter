@@ -70,3 +70,12 @@ class UpdateDevice extends DevicePageEvent {
         price,
       ];
 }
+
+class DeleteDevice extends DevicePageEvent {
+  final String id;
+
+  const DeleteDevice({required this.id});
+
+  @override
+  List<Object> get props => [id];
+}

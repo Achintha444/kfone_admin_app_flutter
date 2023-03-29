@@ -23,7 +23,8 @@ class DeviceEditPage extends StatelessWidget {
   final _descriptionController = TextEditingController();
   final _priceController = TextEditingController();
 
-  void _submitForm(BuildContext context, DeviceEditPageArguments arguments) async {
+  void _submitForm(
+      BuildContext context, DeviceEditPageArguments arguments) async {
     String name = _nameController.text;
     String imageUri = _imageUriController.text;
     int qty = int.parse(_qtyController.text.toString());
@@ -42,6 +43,17 @@ class DeviceEditPage extends StatelessWidget {
         );
   }
 
+  void _deleteDevice(
+    BuildContext context,
+    DeviceEditPageArguments arguments,
+  ) async {
+    context.read<DevicePageBloc>().add(
+          DeleteDevice(
+            id: arguments.device.id!,
+          ),
+        );
+  }
+
   @override
   Widget build(BuildContext context) {
     final DeviceEditPageArguments args =
@@ -50,8 +62,10 @@ class DeviceEditPage extends StatelessWidget {
     _nameController.value = TextEditingValue(text: args.device.name);
     _imageUriController.value = TextEditingValue(text: args.device.imageUri);
     _qtyController.value = TextEditingValue(text: args.device.qty.toString());
-    _descriptionController.value = TextEditingValue(text: args.device.description);
-    _priceController.value = TextEditingValue(text: args.device.price.toString());
+    _descriptionController.value =
+        TextEditingValue(text: args.device.description);
+    _priceController.value =
+        TextEditingValue(text: args.device.price.toString());
 
     return Scaffold(
       appBar: AppBar(
@@ -99,6 +113,17 @@ class DeviceEditPage extends StatelessWidget {
         if (state is UpdateDeviceSuccess) {
           ScaffoldMessenger.of(context).showSnackBar(
             UiUtil.getSnackBar("Device Updated Successfully"),
+          );
+
+          Navigator.pushNamed(
+            context,
+            HomePage.routeName,
+            arguments: HomePageArguments(arguments.sessionToken,
+                drawerItem: arguments.drawerItem),
+          );
+        } else if (state is DeleteDeviceSuccess) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            UiUtil.getSnackBar("Device Deleted Successfully"),
           );
 
           Navigator.pushNamed(
@@ -189,6 +214,11 @@ class DeviceEditPage extends StatelessWidget {
                 ElevatedButton(
                   onPressed: () => _submitForm(context, arguments),
                   child: const Text('Edit Device'),
+                ),
+                const SizedBox(height: 8.0),
+                OutlinedButton(
+                  onPressed: () => _deleteDevice(context, arguments),
+                  child: const Text('Delete Device'),
                 ),
               ],
             ),

@@ -66,5 +66,12 @@ class DevicePageBloc extends Bloc<DevicePageEvent, DevicePageState> {
           .then((value) => emit(UpdateDeviceSuccess()))
           .catchError((err) => emit(DevicePageError()));
     });
+    on<DeleteDevice>((event, emit) async {
+      emit(DevicePageLoading());
+
+      await DevicesController.deleteDevice(event.id)
+          .then((value) => emit(DeleteDeviceSuccess()))
+          .catchError((err) => emit(DevicePageError()));
+    });
   }
 }

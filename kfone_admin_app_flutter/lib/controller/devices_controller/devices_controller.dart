@@ -7,14 +7,13 @@ import '../../util/authorization_config_util.dart';
 import '../controller.dart';
 
 class DevicesController extends Controller {
-  /// get user details about the logged in user
+  /// get devices
   static Future<List<Device>> getDevices() async {
     String apiBaseUrl = await AuthorizationConfigUtil.getAPIBaseUrl();
     String? accessToken = await SecureStorageController.getAccessToken();
 
     final Response response =
         await HttpCall.getCall(accessToken!, '$apiBaseUrl/devices');
-    print(response.body);
     if (response.statusCode == 200) {
       return Device.fromJsonList(response.body);
     } else {
@@ -22,7 +21,7 @@ class DevicesController extends Controller {
     }
   }
 
-  /// get user details about the logged in user
+  /// create device
   static Future<bool> createDevice(Device device) async {
     String apiBaseUrl = await AuthorizationConfigUtil.getAPIBaseUrl();
     String? accessToken = await SecureStorageController.getAccessToken();
@@ -40,7 +39,7 @@ class DevicesController extends Controller {
     }
   }
 
-    /// get user details about the logged in user
+  /// update device
   static Future<bool> updateDevice(Device device) async {
     String apiBaseUrl = await AuthorizationConfigUtil.getAPIBaseUrl();
     String? accessToken = await SecureStorageController.getAccessToken();
@@ -50,11 +49,30 @@ class DevicesController extends Controller {
       '$apiBaseUrl/devices/${device.id}',
       device.toJsonString(),
     );
-    
+
     if (response.statusCode == 200) {
       return true;
     } else {
       throw Exception('Failed to add the device');
+    }
+  }
+
+  /// delete device
+  static Future<bool> deleteDevice(String deviceId) async {
+    String apiBaseUrl = await AuthorizationConfigUtil.getAPIBaseUrl();
+    String? accessToken = await SecureStorageController.getAccessToken();
+
+    final Response response = await HttpCall.deleteCall(
+      accessToken!,
+      '$apiBaseUrl/devices/$deviceId',
+    );
+
+    print(response.statusCode);
+
+    if (response.statusCode == 204) {
+      return true;
+    } else {
+      throw Exception('Failed to delete the device');
     }
   }
 }
