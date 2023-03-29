@@ -2,6 +2,7 @@ import time
 import base64
 import json
 import uuid
+import os
 from collections import OrderedDict
 from enum import Enum
 from functools import wraps
@@ -18,7 +19,7 @@ asgardeo_public_key = None
 JWKS_URL = 'https://api.asgardeo.io/t/kfonebusiness/oauth2/jwks'
 AUD = "obioKxDGAAxKeSlXrtnDBEWdkWYa"
 ADMIN_CLIENT_ID = "dcVj3Rg8kgO8JBr7pj656qvHmpEa"
-ADMIN_CLIENT_SECRET = "3SAUmmtCC4W_15yMewpSdjP883oa"
+ADMIN_CLIENT_SECRET = os.getenv("ADMIN_CLIENT_SECRET")
 ACCESS_TOKEN = {}
 
 
@@ -75,22 +76,13 @@ class PromotionEncoder(json.JSONEncoder):
             return data
         return super().default(obj)
 
-
-# uuid sample value2 
-# Sample data
-# devices = [
-#     Device("c9912c06-0a57-4812-89cb-8322c90fb3e5", 'iPhone 14 Pro Max', 'image1.png', 15, 'Description 1', 100, [1, 2]),
-#     Device("d4e2c72a-1785-454b-ae90-4796859f85d4", 'Samsung Galaxy S22 Ultra', 'image2.png', 5, 'Description 2', 200, [2, 3]),
-#     Device("8c4dd076-e817-4969-a4fa-e33a28023d83", 'Google Pixel 7 Pro', 'image3.png', 8, 'Description 3', 200)
-# ]
-
 devices = OrderedDict({
     "c9912c06-0a57-4812-89cb-8322c90fb3e5": Device("c9912c06-0a57-4812-89cb-8322c90fb3e5", 'iPhone 14 Pro Max',
-                                                   'image1.png', 15, 'Description 1', 100, [1, 2]),
+                                                   'https://www.dialog.lk/dialogdocroot/content/images/devices/samsung-galaxy-ultra-black-med.jpg', 15, 'Description 1', 100, [1, 2]),
     "d4e2c72a-1785-454b-ae90-4796859f85d4": Device("d4e2c72a-1785-454b-ae90-4796859f85d4", 'Samsung Galaxy S22 Ultra',
-                                                   'image2.png', 5, 'Description 2', 200, [2, 3]),
+                                                   'https://www.dialog.lk/dialogdocroot/content/images/devices/samsung-galaxy-ultra-black-med.jpg', 5, 'Description 2', 200, [2, 3]),
     "8c4dd076-e817-4969-a4fa-e33a28023d83": Device("8c4dd076-e817-4969-a4fa-e33a28023d83", 'Google Pixel 7 Pro',
-                                                   'image3.png', 8, 'Description 3', 200)
+                                                   'https://www.dialog.lk/dialogdocroot/content/images/devices/samsung-galaxy-ultra-black-med.jpg', 8, 'Description 3', 200)
 })
 
 promotions = [
@@ -154,8 +146,8 @@ def requires_auth(f):
 
     return decorated
 
-def get_public_key(token):
 
+def get_public_key(token):
     global asgardeo_public_key
     if asgardeo_public_key is not None:
         return asgardeo_public_key
@@ -164,6 +156,7 @@ def get_public_key(token):
     signing_key = jwks_client.get_signing_key_from_jwt(token)
     asgardeo_public_key = signing_key.key
     return asgardeo_public_key
+
 
 def authorize(required_scopes):
     def decorator(func):
@@ -431,13 +424,19 @@ def update_customer(customer_id):
     return jsonify({'device': customer.__dict__}), 200
 
 
-
 @app.route('/update/<string:user_id>', methods=['PATCH'])
 @requires_auth
 @authorize(required_scopes=[])
 def update_user(user_id):
-    get_token("internal_login")
-    print(ACCESS_TOKEN)
+    access_token = get_token("internal_user_mgt_update")
+    profile_data = request.get_json()
+    full_name = ""
+    if 'full_name' in profile_data:
+        full_name = profile_data['full_name']
+    if not full_name:
+        return jsonify({'message': 'Full name not found'}), 400
+
+    update_user(user_id, access_token, full_name)
 
     # return jsonify({'device': customer.__dict__}), 200
     return jsonify({'message': 'Updated'}), 200
@@ -473,6 +472,7 @@ def get__new_access_token(scopes):
         # Raise an exception if the response was not successful
         response.raise_for_status()
 
+
 def get_token(scopes):
     if scopes in ACCESS_TOKEN:
         decoded_token = jwt.decode(ACCESS_TOKEN[scopes], options={"verify_signature": False})
@@ -483,5 +483,34 @@ def get_token(scopes):
         get__new_access_token(scopes)
         return ACCESS_TOKEN[scopes]
 
-if __name__ == '__main__':
-    app.run(port=3000)
+
+def update_user(user_id, token, full_name):
+    url = f"https://api.asgardeo.io/t/kfonebusiness/scim2/Users/{user_id}"
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json"
+    }
+    data = {
+        "Operations": [
+            {
+                "op": "replace",
+                "value": {
+                    "name": {
+                        "formatted": full_name
+                    }
+                }
+            }
+
+        ],
+        "schemas": [
+            "urn:ietf:params:scim:api:messages:2.0:PatchOp"
+        ]
+    }
+    response = requests.patch(url, headers=headers, json=data)
+    if response.ok:
+        return response.json()
+    else:
+        response.raise_for_status()
+
+# if __name__ == '__main__':
+#     app.run(port=3000)
