@@ -16,6 +16,7 @@ class SignoutButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ActionButton(
+      isPrimary: false,
       buttonText: "Sign Out",
       onPressed: () {
         context.read<AccountPageBloc>().add(Signout(sessionToken: sessionToken));

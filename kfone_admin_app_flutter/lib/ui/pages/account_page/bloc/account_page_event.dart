@@ -16,6 +16,19 @@ class GetUserInfo extends AccountPageEvent {
   List<Object> get props => [sessionToken];
 }
 
+class UpdateUserInfo extends AccountPageEvent {
+  final String id;
+  final String fullName;
+
+  const UpdateUserInfo({
+    required this.id,
+    required this.fullName,
+  });
+
+  @override
+  List<Object> get props => [id, fullName];
+}
+
 class Signout extends AccountPageEvent {
   final SessionToken sessionToken;
 

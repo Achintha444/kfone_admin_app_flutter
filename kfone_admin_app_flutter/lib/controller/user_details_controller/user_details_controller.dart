@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:http/http.dart';
 import 'package:kfone_admin_app_flutter/controller/secure_storage_controller/secure_storage_controller.dart';
 import 'package:kfone_admin_app_flutter/util/model/httpCall.dart';
@@ -9,6 +11,24 @@ import '../../util/controller_util/user_details_controller/user_details_controll
 import '../controller.dart';
 
 class UserDetailsController extends Controller {
+  /// update user details of the logged in user
+  static Future<bool> updateUserDetails(
+      String id, String fullNameTextField) async {
+    String apiBaseUrl = await AuthorizationConfigUtil.getAPIBaseUrl();
+    String? accessToken = await SecureStorageController.getAccessToken();
+
+    final Response response = await HttpCall.patchCall(
+      accessToken!,
+      '$apiBaseUrl/update/$id',
+      jsonEncode({"full_name": fullNameTextField}),
+    );
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      throw Exception('Failed to update the user');
+    }
+  }
 
   /// get user details about the logged in user
   static Future<User> getUserDetails(SessionToken sessionToken) async {
@@ -16,7 +36,6 @@ class UserDetailsController extends Controller {
     String accessToken = AuthorizationConfigUtil.getAccessToken(sessionToken);
 
     final Response response = await HttpCall.getCall(accessToken, userinfoUrl);
-
     if (response.statusCode == 200) {
       return User.fromJsonString(response.body);
     } else {
@@ -27,7 +46,8 @@ class UserDetailsController extends Controller {
   /// get the scopes of the user
   static Future<List<String>> getUserScopes() async {
     String? accessToken = await SecureStorageController.getAccessToken();
-    Map<String, dynamic> accessTokenObject = AuthorizationConfigUtil.decodeAccessToken(accessToken);
+    Map<String, dynamic> accessTokenObject =
+        AuthorizationConfigUtil.decodeAccessToken(accessToken);
 
     if (accessTokenObject != {}) {
       String scopes = accessTokenObject["scope"];
