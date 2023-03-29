@@ -4,6 +4,7 @@ import 'package:kfone_admin_app_flutter/controller/user_details_controller/user_
 import 'package:kfone_admin_app_flutter/ui/pages/account_page/bloc/account_page_bloc.dart';
 import 'package:kfone_admin_app_flutter/ui/pages/home_page/bloc/home_page_bloc.dart';
 import 'package:kfone_admin_app_flutter/ui/pages/home_page/features/customers_page/page/customers_page.dart';
+import 'package:kfone_admin_app_flutter/ui/pages/home_page/features/devices_page/page/device_add_page_arguments.dart';
 import 'package:kfone_admin_app_flutter/ui/pages/home_page/features/devices_page/page/devices_page.dart';
 import 'package:kfone_admin_app_flutter/ui/pages/home_page/features/initial_page/page/initial_home_page.dart';
 import 'package:kfone_admin_app_flutter/ui/pages/home_page/features/promotions_page/page/promotions_page.dart';
@@ -221,6 +222,7 @@ class HomePage extends StatelessWidget {
               Navigator.pushNamed(
                 context,
                 DeviceAddPage.routeName,
+                arguments: DeviceAddPageArguments(state.drawerItem),
               );
             },
           );
@@ -231,6 +233,7 @@ class HomePage extends StatelessWidget {
               Navigator.pushNamed(
                 context,
                 DeviceAddPage.routeName,
+                arguments: DeviceAddPageArguments(state.drawerItem)
               );
             },
           );
@@ -241,6 +244,7 @@ class HomePage extends StatelessWidget {
               Navigator.pushNamed(
                 context,
                 DeviceAddPage.routeName,
+                arguments: DeviceAddPageArguments(state.drawerItem)
               );
             },
           );

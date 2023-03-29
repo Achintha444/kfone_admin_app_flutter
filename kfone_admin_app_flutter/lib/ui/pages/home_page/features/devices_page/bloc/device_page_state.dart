@@ -13,6 +13,8 @@ class DevicePageLoading extends DevicePageState {}
 
 class DevicePageError extends DevicePageState {}
 
+class DevicePageAuthorized extends DevicePageState {}
+
 class DevicePageUnauthorized extends DevicePageState {}
 
 class GetDevicesSucess extends DevicePageState {
@@ -23,3 +25,5 @@ class GetDevicesSucess extends DevicePageState {
   @override
   List<Object> get props => [devices];
 }
+
+class CreateDeviceSuccess extends DevicePageState {}

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:kfone_admin_app_flutter/ui/pages/home_page/features/devices_page/page/device_add_page.dart';
 
 class AddResourceButton extends StatelessWidget {
   final String tooltip;
@@ -14,12 +13,7 @@ class AddResourceButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
-      onPressed: () {
-        Navigator.pushNamed(
-          context,
-          DeviceAddPage.routeName,
-        );
-      },
+      onPressed: () => onPressed(),
       tooltip: "",
       child: const Icon(Icons.add),
     );

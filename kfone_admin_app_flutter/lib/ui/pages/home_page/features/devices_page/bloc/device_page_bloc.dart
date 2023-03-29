@@ -12,7 +12,7 @@ part 'device_page_state.dart';
 
 class DevicePageBloc extends Bloc<DevicePageEvent, DevicePageState> {
   DevicePageBloc() : super(DevicePageInitial()) {
-    on<GetDevices>((event, emit) async {
+    on<DevicePageCheckAccess>((event, emit) async {
       emit(DevicePageLoading());
 
       List<String> scopes = await event.drawerItem.scopes;
@@ -20,13 +20,35 @@ class DevicePageBloc extends Bloc<DevicePageEvent, DevicePageState> {
 
       // check if the user has the required scopes to access this page
       if (UiUtil.compareLists(userScopes, scopes)) {
-        await DevicesController.getDevices().then((value) {
-          emit(GetDevicesSucess(devices: value));
-          // ignore: invalid_return_type_for_catch_error
-        }).catchError((err) => emit(DevicePageError()));
+        emit(DevicePageUnauthorized());
+        throw Exception('Failed to get devices details');
       } else {
         emit(DevicePageUnauthorized());
+        throw Exception('Failed to get devices details');
       }
+    });
+    on<GetDevices>((event, emit) async {
+      emit(DevicePageLoading());
+
+      await DevicesController.getDevices().then((value) {
+        emit(GetDevicesSucess(devices: value));
+        // ignore: invalid_return_type_for_catch_error
+      }).catchError((err) => emit(DevicePageError()));
+    });
+    on<CreateDevice>((event, emit) async {
+      emit(DevicePageLoading());
+
+      Device device = Device(
+        name: event.name,
+        imageUri: event.imageUri,
+        price: event.price,
+        description: event.description,
+        qty: event.qty,
+      );
+
+      await DevicesController.createDevice(device)
+          .then((value) => emit(CreateDeviceSuccess()))
+          .catchError((err) => emit(DevicePageError()));
     });
   }
 }

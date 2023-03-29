@@ -5,6 +5,7 @@ import 'package:kfone_admin_app_flutter/ui/pages/home_page/features/devices_page
 import 'package:kfone_admin_app_flutter/ui/widgets/common/unauthorized_widget.dart';
 
 import '../../../../../widgets/common/error_page.dart';
+import '../../../bloc/home_page_bloc.dart';
 import '../../../models/drawer_item.dart';
 
 class DevicesPage extends StatelessWidget {
@@ -17,20 +18,28 @@ class DevicesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => DevicePageBloc()
-        ..add(
-          GetDevices(drawerItem: drawerItem),
+    return MultiBlocProvider(
+       providers: [
+        BlocProvider<HomePageBloc>(
+          create: (BuildContext context) => HomePageBloc()
+            ..add(
+              CheckAccess(drawerItem: drawerItem),
+            ),
         ),
-      child: BlocBuilder<DevicePageBloc, DevicePageState>(
+        BlocProvider<DevicePageBloc>(
+          create: (BuildContext context) => DevicePageBloc()
+            ..add(
+              GetDevices(),
+            ),
+        ),
+      ],
+      child: BlocBuilder<HomePageBloc, HomePageState>(
           builder: (context, state) {
-        if (state is DevicePageInitial || state is DevicePageLoading) {
+        if (state is HomePageInitial || state is Loading) {
           return const Center(child: CircularProgressIndicator());
-        } else if (state is GetDevicesSucess) {
-          return DevicesTable(
-            devices: state.devices,
-          );
-        } else if (state is DevicePageUnauthorized) {
+        } else if (state is Authorized) {
+           return _createBody();
+        } else if (state is Unauthorized) {
           return const UnauthorizedWidget();
         } else {
           return ErrorPage(
@@ -41,4 +50,24 @@ class DevicesPage extends StatelessWidget {
       }),
     );
   }
+
+  BlocBuilder<DevicePageBloc, DevicePageState> _createBody() {
+    return BlocBuilder<DevicePageBloc, DevicePageState>(
+        builder: (context, state) {
+      if (state is DevicePageInitial || state is DevicePageLoading) {
+        return const Center(child: CircularProgressIndicator());
+      } else if (state is GetDevicesSucess) {
+        return DevicesTable(
+          devices: state.devices,
+        );
+      } else {
+        return ErrorPage(
+          buttonText: 'Try Again',
+          onPressed: () {},
+        );
+      }
+    });
+  }
+
+
 }

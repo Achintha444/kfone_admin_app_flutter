@@ -15,3 +15,12 @@ class NavigateDrawer extends HomePageEvent {
   @override
   List<Object> get props => [drawerItem];
 }
+
+class CheckAccess extends HomePageEvent {
+  final DrawerItem drawerItem;
+
+  const CheckAccess({required this.drawerItem});
+
+  @override
+  List<Object> get props => [drawerItem];
+}
