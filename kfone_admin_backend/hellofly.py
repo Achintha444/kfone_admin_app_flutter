@@ -17,9 +17,7 @@ from jwt import PyJWKClient
 app = Flask(__name__)
 
 config = configparser.ConfigParser()
-# config.read('resources/config.ini')
-config.read('/Users/farasath/dev/kfone_admin_app_flutter/kfone_admin_backend/config.ini')
-print(config['ASGARDEO'])
+config.read('resources/config.ini')
 ORG_NAME = config['ASGARDEO']['ORGANIZATION']
 CUSTOMER_GROUP_ID = config['ASGARDEO']['CUSTOMER_GROUP_ID']
 
