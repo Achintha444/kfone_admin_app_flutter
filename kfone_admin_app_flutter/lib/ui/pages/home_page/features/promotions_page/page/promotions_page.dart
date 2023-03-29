@@ -1,47 +1,42 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kfone_admin_app_flutter/ui/pages/home_page/models/drawer_item.dart';
 
-import '../../../../../../util/ui_util.dart';
-import '../../../../../widgets/common/table_header_widget.dart';
-import '../widgets/table_row_data.dart';
+import '../../../../../widgets/common/error_page.dart';
+import '../../../../../widgets/common/unauthorized_widget.dart';
+import '../bloc/promotion_page_bloc.dart';
+import '../widgets/promotions_table.dart';
 
 class PromotionsPage extends StatelessWidget {
-  const PromotionsPage({super.key});
+
+  final DrawerItem drawerItem;
+
+  const PromotionsPage({super.key, required this.drawerItem});
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: UiUtil.getMediaQueryWidth(context),
-      child: DataTable(
-        columns: const <DataColumn>[
-          DataColumn(
-            label: TableHeaderWidget(label: 'Promo Code'),
-          ),
-          DataColumn(
-            label: TableHeaderWidget(label: 'Discount'),
-          ),
-          DataColumn(
-            label: Spacer(),
-          ),
-        ],
-        rows: <DataRow>[
-          tableRowData(
-            'BUS10',
-            '10%',
-          ),
-          tableRowData(
-            'SAM20',
-            '20%',
-          ),
-          tableRowData(
-            'APP15',
-            '15%',
-          ),
-          tableRowData(
-            'XIA10',
-            '10%',
-          ),
-        ],
-      ),
+    return BlocProvider(
+      create: (context) => PromotionPageBloc()
+        ..add(
+          GetPromotions(drawerItem: drawerItem),
+        ),
+      child: BlocBuilder<PromotionPageBloc, PromotionPageState>(
+          builder: (context, state) {
+        if (state is PromotionPageInitial || state is PromotionPageLoading) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (state is GetPromotionsSucess) {
+          return PromotionsTable(
+            promotions: state.promotions,
+          );
+        } else if (state is PromotionPageUnauthorized) {
+          return const UnauthorizedWidget();
+        } else {
+          return ErrorPage(
+            buttonText: 'Try Again',
+            onPressed: () {},
+          );
+        }
+      }),
     );
   }
 }

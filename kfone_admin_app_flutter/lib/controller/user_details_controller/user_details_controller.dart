@@ -1,10 +1,10 @@
 import 'package:http/http.dart';
 import 'package:kfone_admin_app_flutter/controller/secure_storage_controller/secure_storage_controller.dart';
+import 'package:kfone_admin_app_flutter/util/model/httpCall.dart';
 import 'package:kfone_admin_app_flutter/util/model/session_token.dart';
 
 import '../../model/user.dart';
 import '../../util/authorization_config_util.dart';
-import '../../util/common.dart';
 import '../../util/controller_util/user_details_controller/user_details_controller_util.dart';
 import '../controller.dart';
 
@@ -15,7 +15,7 @@ class UserDetailsController extends Controller {
     String userinfoUrl = await UserDetailsControllerUtil.getUserIntoUrl();
     String accessToken = AuthorizationConfigUtil.getAccessToken(sessionToken);
 
-    final Response response = await Common.getCall(accessToken, userinfoUrl);
+    final Response response = await HttpCall.getCall(accessToken, userinfoUrl);
 
     if (response.statusCode == 200) {
       return User.fromJsonString(response.body);
