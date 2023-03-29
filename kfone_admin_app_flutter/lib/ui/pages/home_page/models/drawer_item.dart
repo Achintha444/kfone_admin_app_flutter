@@ -7,10 +7,9 @@ class DrawerItem {
   final DrawerItemTypes type;
   final IconData icon;
 
-  const DrawerItem(
-      {required this.type, required this.icon});
+  const DrawerItem({required this.type, required this.icon});
 
-  Future<List<String>> get scopes async{
+  Future<List<String>> get scopes async {
     switch (type) {
       case DrawerItemTypes.devices:
         return await ScopeController.getAllScopesOfDeviceInterface();
@@ -18,11 +17,13 @@ class DrawerItem {
         return await ScopeController.getAllScopesOfPermissionsInterface();
       case DrawerItemTypes.salesTrends:
         return await ScopeController.getAllScopesOfSalesTrendsInterface();
+      case DrawerItemTypes.customers:
+        return await ScopeController.getAllScopesOfCustomersInterface();
       default:
         return [];
     }
   }
-  
+
   String get itemName {
     switch (type) {
       case DrawerItemTypes.initial:

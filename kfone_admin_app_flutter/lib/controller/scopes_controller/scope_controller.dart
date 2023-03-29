@@ -23,7 +23,7 @@ class ScopeController extends Controller {
     return List<String>.from(scopeJson["DevicesInterface"]["scopes"]);
   }
 
-  /// get all the scopes of the device interface
+  /// get all the scopes of the permission interface
   static Future<List<String>> getAllScopesOfPermissionsInterface() async {
     final Map<String, dynamic> scopeJson =
         await ScopeControllerUtil.readScopesJson();
@@ -31,11 +31,19 @@ class ScopeController extends Controller {
     return List<String>.from(scopeJson["PermissionsInterface"]["scopes"]);
   }
 
-  /// get all the scopes of the device interface
+  /// get all the scopes of the sales trend interface
   static Future<List<String>> getAllScopesOfSalesTrendsInterface() async {
     final Map<String, dynamic> scopeJson =
         await ScopeControllerUtil.readScopesJson();
 
     return List<String>.from(scopeJson["SalesTrendsInterface"]["scopes"]);
+  }
+
+  // get all the scopes of the customers interface
+  static Future<List<String>> getAllScopesOfCustomersInterface() async {
+    final Map<String, dynamic> scopeJson =
+        await ScopeControllerUtil.readScopesJson();
+
+    return List<String>.from(scopeJson["CustomersInterfac"]["scopes"]);
   }
 }
