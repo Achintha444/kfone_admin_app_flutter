@@ -34,7 +34,7 @@ class PromotionPageBloc extends Bloc<PromotionPageEvent, PromotionPageState> {
       Promotion promotion = Promotion(
         code: event.promoCode,
         discount: event.discount,
-        tiers: []
+        tiers: const []
       );
 
       await PromotionsController.createPromotion(promotion)

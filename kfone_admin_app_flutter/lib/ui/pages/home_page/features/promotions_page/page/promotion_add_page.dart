@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:kfone_admin_app_flutter/ui/pages/home_page/features/devices_page/page/device_add_page_arguments.dart';
 import 'package:kfone_admin_app_flutter/ui/pages/home_page/features/promotions_page/bloc/promotion_page_bloc.dart';
 import 'package:kfone_admin_app_flutter/ui/pages/home_page/features/promotions_page/page/promotion_add_page_arguments.dart';
 
