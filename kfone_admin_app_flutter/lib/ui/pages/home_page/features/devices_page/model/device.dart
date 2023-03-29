@@ -3,26 +3,24 @@ import 'dart:convert';
 import 'package:equatable/equatable.dart';
 
 class Device extends Equatable {
-  final String id;
   final String name;
   final String imageUri;
   final int qty;
   final String description;
   final double price;
-  final List<int> promos;
 
   const Device({
-    required this.id,
+    String? id,
     required this.name,
     required this.imageUri,
     required this.qty,
     required this.description,
     required this.price,
-    required this.promos,
+    List<int>? promos,
   });
 
   @override
-  List<Object?> get props => [id, name, imageUri, qty, description, price, promos];
+  List<Object?> get props => [name, imageUri, qty, description, price];
 
   /// return `Device` object from a relevant json string
   static Device fromJsonString(String jsonString) {
@@ -49,6 +47,17 @@ class Device extends Equatable {
     }
 
     return devices;
+  }
+
+  /// return a json string from a Device object
+  String toJsonString() {
+    return jsonEncode({
+      "name": name,
+      "image_uri": imageUri,
+      "qty": qty,
+      "description": description,
+      "price": price
+    });
   }
   
 }

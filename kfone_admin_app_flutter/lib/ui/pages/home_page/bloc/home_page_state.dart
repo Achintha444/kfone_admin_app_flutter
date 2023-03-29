@@ -21,6 +21,10 @@ class HomePageInitial extends HomePageState {}
 
 class Loading extends HomePageState {}
 
+class Authorized extends HomePageState {}
+
+class Unauthorized extends HomePageState {}
+
 class InitialInterface extends HomePageState implements DrawerState{
   
     @override
