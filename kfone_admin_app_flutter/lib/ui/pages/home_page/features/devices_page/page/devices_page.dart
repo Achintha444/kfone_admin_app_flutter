@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kfone_admin_app_flutter/ui/pages/home_page/features/devices_page/bloc/device_page_bloc.dart';
 import 'package:kfone_admin_app_flutter/ui/pages/home_page/features/devices_page/widgets/devices_table.dart';
 import 'package:kfone_admin_app_flutter/ui/widgets/common/unauthorized_widget.dart';
+import 'package:kfone_admin_app_flutter/util/model/session_token.dart';
 
 import '../../../../../widgets/common/error_page.dart';
 import '../../../bloc/home_page_bloc.dart';
@@ -10,10 +11,12 @@ import '../../../models/drawer_item.dart';
 
 class DevicesPage extends StatelessWidget {
   final DrawerItem drawerItem;
+  final SessionToken sessionToken;
 
   const DevicesPage({
     super.key,
     required this.drawerItem,
+    required this.sessionToken,
   });
 
   @override
@@ -65,6 +68,8 @@ class DevicesPage extends StatelessWidget {
         } else if (state is GetDevicesSucess) {
           return DevicesTable(
             devices: state.devices.reversed.toList(),
+            sessionToken: sessionToken,
+            drawerItem: drawerItem,
           );
         } else {
           return ErrorPage(

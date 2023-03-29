@@ -108,7 +108,7 @@ class HomePage extends StatelessWidget {
             },
           ),
         ),
-        body: _buildBody(context),
+        body: _buildBody(context, args),
         floatingActionButton: _buildAddResourceFloatingButton(context, args),
       ),
     );
@@ -198,7 +198,8 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  BlocBuilder<HomePageBloc, HomePageState> _buildBody(BuildContext context) {
+  BlocBuilder<HomePageBloc, HomePageState> _buildBody(
+      BuildContext context, HomePageArguments arguments) {
     return BlocBuilder<HomePageBloc, HomePageState>(
       builder: (context, state) {
         if (state is Loading) {
@@ -206,7 +207,10 @@ class HomePage extends StatelessWidget {
             child: CircularProgressIndicator(),
           );
         } else if (state is DevicesInterface) {
-          return DevicesPage(drawerItem: state.drawerItem);
+          return DevicesPage(
+            drawerItem: state.drawerItem,
+            sessionToken: arguments.sessionToken,
+          );
         } else if (state is PromotionsInterface) {
           return PromotionsPage(drawerItem: state.drawerItem);
         } else if (state is CustomersInterface) {

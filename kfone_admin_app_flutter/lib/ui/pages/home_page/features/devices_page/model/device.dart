@@ -2,15 +2,17 @@ import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
 
+// ignore: must_be_immutable
 class Device extends Equatable {
+  String? id;
   final String name;
   final String imageUri;
   final int qty;
   final String description;
   final double price;
 
-  const Device({
-    String? id,
+  Device({
+    this.id,
     required this.name,
     required this.imageUri,
     required this.qty,
@@ -31,7 +33,7 @@ class Device extends Equatable {
       name: deviceMap["name"] ?? "",
       imageUri: deviceMap["image_uri"] ?? "",
       qty: int.parse(deviceMap["qty"].toString()),
-      description: deviceMap["descriptions"] ?? "",
+      description: deviceMap["description"] ?? "",
       price: double.parse(deviceMap["price"].toString()),
       promos: deviceMap["promo_id_list"] != null ? List<int>.from(deviceMap["promo_id_list"]) : [],
     );

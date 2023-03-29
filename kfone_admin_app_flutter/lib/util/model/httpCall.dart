@@ -48,4 +48,21 @@ abstract class HttpCall {
 
     return response;
   }
+
+    /// common authroization call
+  static Future<http.Response> putCall(
+      String accessToken, String url, Object body) async {
+    final response = await http.patch(
+      Uri.parse(
+        url,
+      ),
+      headers: {
+        'Authorization': 'Bearer $accessToken',
+        'Content-Type': 'application/json'
+      },
+      body: body,
+    );
+
+    return response;
+  }
 }

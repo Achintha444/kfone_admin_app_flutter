@@ -42,3 +42,31 @@ class CreateDevice extends DevicePageEvent {
         price,
       ];
 }
+
+class UpdateDevice extends DevicePageEvent {
+  final String id;
+  final String name;
+  final String imageUri;
+  final int qty;
+  final String description;
+  final double price;
+
+  const UpdateDevice({
+    required this.id,
+    required this.name,
+    required this.imageUri,
+    required this.qty,
+    required this.description,
+    required this.price,
+  });
+
+  @override
+  List<Object> get props => [
+        id,
+        name,
+        imageUri,
+        qty,
+        description,
+        price,
+      ];
+}

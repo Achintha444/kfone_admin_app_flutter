@@ -14,7 +14,7 @@ class DevicesController extends Controller {
 
     final Response response =
         await HttpCall.getCall(accessToken!, '$apiBaseUrl/devices');
-
+    print(response.body);
     if (response.statusCode == 200) {
       return Device.fromJsonList(response.body);
     } else {
@@ -34,6 +34,24 @@ class DevicesController extends Controller {
     );
 
     if (response.statusCode == 201) {
+      return true;
+    } else {
+      throw Exception('Failed to add the device');
+    }
+  }
+
+    /// get user details about the logged in user
+  static Future<bool> updateDevice(Device device) async {
+    String apiBaseUrl = await AuthorizationConfigUtil.getAPIBaseUrl();
+    String? accessToken = await SecureStorageController.getAccessToken();
+
+    final Response response = await HttpCall.putCall(
+      accessToken!,
+      '$apiBaseUrl/devices/${device.id}',
+      device.toJsonString(),
+    );
+    
+    if (response.statusCode == 200) {
       return true;
     } else {
       throw Exception('Failed to add the device');

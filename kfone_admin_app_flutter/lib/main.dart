@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kfone_admin_app_flutter/ui/pages/home_page/features/devices_page/page/device_add_page.dart';
+import 'package:kfone_admin_app_flutter/ui/pages/home_page/features/devices_page/page/device_edit_page.dart';
 import 'package:kfone_admin_app_flutter/ui/pages/home_page/features/promotions_page/page/promotion_add_page.dart';
 import 'package:kfone_admin_app_flutter/ui/pages/home_page/page/home_page.dart';
 
@@ -26,6 +27,7 @@ class MyApp extends StatelessWidget {
         AccountPage.routeName: (context) => const AccountPage(),
         HomePage.routeName: (context) => const HomePage(),
         DeviceAddPage.routeName: (context) => DeviceAddPage(),
+        DeviceEditPage.routeName: (context) => DeviceEditPage(),
         PromotionAddPage.routeName: (context) => PromotionAddPage(),
       },
     );
