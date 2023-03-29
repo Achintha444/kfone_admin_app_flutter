@@ -2,19 +2,20 @@ import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
 
+// ignore: must_be_immutable
 class Promotion extends Equatable {
-  final String id;
+  String? id;
   final String code;
   final double discount;
   final List<String> tiers;
-  final List<String> devices;
+  List<String>? devices;
 
-  const Promotion({
-    required this.id,
+  Promotion({
+    this.id,
     required this.code,
     required this.discount,
     required this.tiers,
-    required this.devices,
+    this.devices,
   });
 
   @override
@@ -44,5 +45,14 @@ class Promotion extends Equatable {
     }
 
     return promotions;
+  }
+
+  /// return a json string from a Promotion object
+  String toJsonString() {
+    return jsonEncode({
+      "promo_code": code,
+      "discount": discount,
+      "tiers": tiers,
+    });
   }
 }

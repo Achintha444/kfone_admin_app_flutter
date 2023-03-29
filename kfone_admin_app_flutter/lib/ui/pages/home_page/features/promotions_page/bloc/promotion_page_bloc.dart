@@ -28,5 +28,18 @@ class PromotionPageBloc extends Bloc<PromotionPageEvent, PromotionPageState> {
         emit(PromotionPageUnauthorized());
       }
     });
+    on<CreatePromtion>((event, emit) async {
+      emit(PromotionPageLoading());
+
+      Promotion promotion = Promotion(
+        code: event.promoCode,
+        discount: event.discount,
+        tiers: []
+      );
+
+      await PromotionsController.createPromotion(promotion)
+          .then((value) => emit(CreatePromotionSuccess()))
+          .catchError((err) => emit(CreatePromotionError()));
+    });
   }
 }

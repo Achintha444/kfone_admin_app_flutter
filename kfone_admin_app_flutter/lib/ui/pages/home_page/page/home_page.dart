@@ -7,6 +7,8 @@ import 'package:kfone_admin_app_flutter/ui/pages/home_page/features/customers_pa
 import 'package:kfone_admin_app_flutter/ui/pages/home_page/features/devices_page/page/device_add_page_arguments.dart';
 import 'package:kfone_admin_app_flutter/ui/pages/home_page/features/devices_page/page/devices_page.dart';
 import 'package:kfone_admin_app_flutter/ui/pages/home_page/features/initial_page/page/initial_home_page.dart';
+import 'package:kfone_admin_app_flutter/ui/pages/home_page/features/promotions_page/page/promotion_add_page.dart';
+import 'package:kfone_admin_app_flutter/ui/pages/home_page/features/promotions_page/page/promotion_add_page_arguments.dart';
 import 'package:kfone_admin_app_flutter/ui/pages/home_page/features/promotions_page/page/promotions_page.dart';
 import 'package:kfone_admin_app_flutter/ui/pages/home_page/features/sales_trend_page/page/sales_trend_page.dart';
 import 'package:kfone_admin_app_flutter/ui/pages/home_page/models/drawer_item.dart';
@@ -244,8 +246,8 @@ class HomePage extends StatelessWidget {
             onPressed: () {
               Navigator.pushNamed(
                 context,
-                DeviceAddPage.routeName,
-                arguments: DeviceAddPageArguments(
+                PromotionAddPage.routeName,
+                arguments: PromotionAddPageArguments(
                   state.drawerItem,
                   arguments.sessionToken,
                 ),
@@ -258,8 +260,8 @@ class HomePage extends StatelessWidget {
             onPressed: () {
               Navigator.pushNamed(
                 context,
-                DeviceAddPage.routeName,
-                arguments: DeviceAddPageArguments(
+                PromotionAddPage.routeName,
+                arguments: PromotionAddPageArguments(
                   state.drawerItem,
                   arguments.sessionToken,
                 ),

@@ -24,3 +24,7 @@ class GetPromotionsSucess extends PromotionPageState {
   List<Object> get props => [promotions];
 }
 
+class CreatePromotionSuccess extends PromotionPageState {}
+
+class CreatePromotionError extends PromotionPageState {}
+

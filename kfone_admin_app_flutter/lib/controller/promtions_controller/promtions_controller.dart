@@ -21,4 +21,22 @@ class PromotionsController extends Controller {
       throw Exception('Failed to get promotions details');
     }
   }
+
+    /// get user details about the logged in user
+  static Future<bool> createPromotion(Promotion promotion) async {
+    String apiBaseUrl = await AuthorizationConfigUtil.getAPIBaseUrl();
+    String? accessToken = await SecureStorageController.getAccessToken();
+
+    final Response response = await HttpCall.postCall(
+      accessToken!,
+      '$apiBaseUrl/promotions',
+      promotion.toJsonString(),
+    );
+
+    if (response.statusCode == 201) {
+      return true;
+    } else {
+      throw Exception('Failed to add th promotion');
+    }
+  }
 }

@@ -36,7 +36,7 @@ class DevicesController extends Controller {
     if (response.statusCode == 201) {
       return true;
     } else {
-      throw Exception('Failed to get devices details');
+      throw Exception('Failed to add the device');
     }
   }
 }
