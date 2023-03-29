@@ -76,13 +76,17 @@ class PromotionEncoder(json.JSONEncoder):
             return data
         return super().default(obj)
 
+
 devices = OrderedDict({
     "c9912c06-0a57-4812-89cb-8322c90fb3e5": Device("c9912c06-0a57-4812-89cb-8322c90fb3e5", 'iPhone 14 Pro Max',
-                                                   'https://www.dialog.lk/dialogdocroot/content/images/devices/samsung-galaxy-ultra-black-med.jpg', 15, 'Description 1', 100, [1, 2]),
+                                                   'https://www.dialog.lk/dialogdocroot/content/images/devices/samsung-galaxy-ultra-black-med.jpg',
+                                                   15, 'Description 1', 100, [1, 2]),
     "d4e2c72a-1785-454b-ae90-4796859f85d4": Device("d4e2c72a-1785-454b-ae90-4796859f85d4", 'Samsung Galaxy S22 Ultra',
-                                                   'https://www.dialog.lk/dialogdocroot/content/images/devices/samsung-galaxy-ultra-black-med.jpg', 5, 'Description 2', 200, [2, 3]),
+                                                   'https://www.dialog.lk/dialogdocroot/content/images/devices/samsung-galaxy-ultra-black-med.jpg',
+                                                   5, 'Description 2', 200, [2, 3]),
     "8c4dd076-e817-4969-a4fa-e33a28023d83": Device("8c4dd076-e817-4969-a4fa-e33a28023d83", 'Google Pixel 7 Pro',
-                                                   'https://www.dialog.lk/dialogdocroot/content/images/devices/samsung-galaxy-ultra-black-med.jpg', 8, 'Description 3', 200)
+                                                   'https://www.dialog.lk/dialogdocroot/content/images/devices/samsung-galaxy-ultra-black-med.jpg',
+                                                   8, 'Description 3', 200)
 })
 
 promotions = [
@@ -507,6 +511,70 @@ def update_user(user_id, token, full_name):
         ]
     }
     response = requests.patch(url, headers=headers, json=data)
+    if response.ok:
+        return response.json()
+    else:
+        response.raise_for_status()
+
+
+def add_client(token, email, first_name, last_name):
+    url = "https://api.asgardeo.io/t/kfonebusiness/scim2/Users"
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json"
+    }
+    payload = {
+        "userName": f"DEFAULT/{email}",
+        "name": {
+            "familyName": f"{first_name}",
+            "givenName": f"{last_name}"
+        },
+        "emails": [
+            {
+                "primary": True,
+                "value": f"{email}"
+            }
+        ],
+        "urn:scim:wso2:schema": {
+            "askPassword": "true"
+        }
+    }
+
+    response = requests.post(url, headers=headers, data=json.dumps(payload))
+
+    if response.status_code == 201:
+        print("User created successfully!")
+        response_json = response.json()
+        user_id = response_json['id']
+        username = response_json['userName']
+        add_user_to_group(token, username, user_id)
+    else:
+        print("User creation failed.")
+        print(response.status_code, response.content)
+
+
+def add_user_to_group(token, email, user_id):
+    url = 'https://api.asgardeo.io/t/kfonebusiness/scim2/Groups/3f6f5201-e24d-4a6e-a527-240c5c040f43'  # Replace {group_id} with the actual group ID
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': f'Bearer f"{token}'  # Replace {access_token} with the actual access token
+    }
+
+    payload = {
+        "Operations": [
+            {
+                "op": "add",
+                "value": {
+                    "members": [
+                        {"display": f"DEFAULT/{email}", "value": f"{user_id}"}
+                    ]
+                }
+            }
+        ],
+        "schemas": ["urn:ietf:params:scim:api:messages:2.0:PatchOp"]
+    }
+
+    response = requests.patch(url, json=payload, headers=headers)
     if response.ok:
         return response.json()
     else:
