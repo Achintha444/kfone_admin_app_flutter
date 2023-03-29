@@ -274,7 +274,7 @@ def delete_device(device_id):
     # check if device exists
     if device_id in devices:
         devices.pop(device_id)
-        return jsonify({'message': f"Device with ID {device_id} deleted successfully"})
+        return jsonify({'message': f"Device with ID {device_id} deleted successfully"}), 204
     else:
         response = make_response(jsonify(message=f"Device with ID {device_id} not found"), 404)
         abort(response)
@@ -390,23 +390,25 @@ def get_customers():
     return json.dumps([customer.__dict__ for customer in customers.values()]), 200, {'content-type': 'application/json'}
 
 
+        # - firstName
+        # - lastName
+        # - tier
+        # - country
 @app.route('/customers', methods=['POST'])
 @requires_auth
 @authorize(required_scopes=['customers_add'])
 def add_customer():
-    # customer_data = request.get_json()
-    # # generate a uuid for the device as a string
-    # device_id = f'{uuid.uuid1()}'
-    # if 'name' not in device_data or 'image_uri' not in device_data or 'qty' not in device_data or \
-    #         'description' not in device_data or 'price' not in device_data:
-    #     return jsonify({'message': 'Missing required fields'}), 400
-    # promo_id_list = []
-    # if 'promo_id' in device_data:
-    #     promo_id_list = device_data['promo_id']
-    # new_device = Device(device_id, device_data['name'], device_data['image_uri'], device_data['qty'],
-    #                     device_data['description'], device_data['price'], promo_id_list)
-    # devices.append(new_device)
-    return jsonify({'customer': "oops"}), 201
+    customer_data = request.get_json()
+    if 'firstName' not in customer_data or 'lastName' not in customer_data or 'country' not in customer_data or 'email' not in customer_data:
+        return jsonify({'message': 'Missing required fields'}), 400
+    
+    access_token = get_token("internal_user_mgt_create internal_group_mgt_update")
+    try:
+        create_customer(access_token, customer_data['email'], customer_data['firstName'], customer_data['lastName'])
+    except:
+        return jsonify({'message': 'Error creating customer'}), 500
+
+    return jsonify({'message': 'Customer created successfully.'}), 201
 
 
 @app.route('/customers/<string:customer_id>', methods=['PATCH'])
@@ -523,7 +525,7 @@ def update_user(user_id, token, full_name):
         response.raise_for_status()
 
 
-def add_client(token, email, first_name, last_name):
+def create_customer(token, email, first_name, last_name):
     url = f"https://api.asgardeo.io/t/{ORG_NAME}/scim2/Users"
     headers = {
         "Authorization": f"Bearer {token}",
@@ -557,13 +559,14 @@ def add_client(token, email, first_name, last_name):
     else:
         print("User creation failed.")
         print(response.status_code, response.content)
+        response.raise_for_status()
 
 
-def add_user_to_group(token, email, user_id):
+def add_user_to_group(token, username, user_id):
     url = f"https://api.asgardeo.io/t/{ORG_NAME}/scim2/Groups/{CUSTOMER_GROUP_ID}"  # Replace {group_id} with the actual group ID
     headers = {
         'Content-Type': 'application/json',
-        'Authorization': f'Bearer f"{token}'  # Replace {access_token} with the actual access token
+        'Authorization': f'Bearer {token}'  # Replace {access_token} with the actual access token
     }
 
     payload = {
@@ -572,7 +575,7 @@ def add_user_to_group(token, email, user_id):
                 "op": "add",
                 "value": {
                     "members": [
-                        {"display": f"DEFAULT/{email}", "value": f"{user_id}"}
+                        {"display": f"{username}", "value": f"{user_id}"}
                     ]
                 }
             }

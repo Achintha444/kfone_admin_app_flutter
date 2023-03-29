@@ -520,6 +520,9 @@ components:
         country:
           type: string
           description: Country where the customer is located
+        email:
+          type: string
+          description: Email Address of the customer
       required:
         - firstName
         - lastName
