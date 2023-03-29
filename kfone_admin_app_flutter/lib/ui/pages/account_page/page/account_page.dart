@@ -55,6 +55,17 @@ class AccountPage extends StatelessWidget {
             ScaffoldMessenger.of(context).showSnackBar(
               UiUtil.getSnackBar("Signout Failed"),
             );
+          } else if (state is UserUpdatedSucess) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              UiUtil.getSnackBar("User updated successfully"),
+            );
+            context.read<AccountPageBloc>().add(
+                  GetUserInfo(sessionToken: args.sessionToken)
+                );
+          } else if (state is UserUpdatedFail) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              UiUtil.getSnackBar("User updated failed"),
+            );
           } else if (state is SignoutSuccess) {
             ScaffoldMessenger.of(context).showSnackBar(
               UiUtil.getSnackBar("Signout Success"),

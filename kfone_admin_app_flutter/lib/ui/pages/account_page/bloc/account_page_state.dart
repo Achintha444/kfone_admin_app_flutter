@@ -17,6 +17,10 @@ class UserInfoSucess extends AccountPageState {
   const UserInfoSucess({required this.user});
 }
 
+class UserUpdatedSucess extends AccountPageState {}
+
+class UserUpdatedFail extends AccountPageState {}
+
 class UserInfoFail extends AccountPageState {}
 
 class SignoutSuccess extends AccountPageState {}

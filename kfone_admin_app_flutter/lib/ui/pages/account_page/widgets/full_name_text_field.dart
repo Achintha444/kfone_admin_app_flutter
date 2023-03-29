@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 
-class ProfileParameter extends StatelessWidget {
+class FullNameTextField extends StatelessWidget {
+  final TextEditingController controller;
   final String parameter;
   final String value;
 
-  const ProfileParameter({
+  const FullNameTextField({
     Key? key,
     required this.parameter,
     required this.value,
+    required this.controller,
   }) : super(key: key);
 
   IconData _getIconDataForParameter(String parameter) {
@@ -47,13 +49,14 @@ class ProfileParameter extends StatelessWidget {
           color: Colors.black38,
         ),
       ),
-      subtitle: Text(
-        value,
-        style: const TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.w500,
-          color: Colors.black87,
-        ),
+      subtitle: TextFormField(
+        controller: controller,
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Please enter a value';
+          }
+          return null;
+        },
       ),
       style: ListTileStyle.list,
     );

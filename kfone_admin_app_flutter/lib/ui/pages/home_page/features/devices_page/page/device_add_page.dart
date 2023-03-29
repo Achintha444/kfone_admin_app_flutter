@@ -67,8 +67,7 @@ class DeviceAddPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(ModalRoute.of(context)!.settings.arguments);
-
+    
     final DeviceAddPageArguments args =
         ModalRoute.of(context)!.settings.arguments as DeviceAddPageArguments;
 

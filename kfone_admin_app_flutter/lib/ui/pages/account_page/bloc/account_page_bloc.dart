@@ -21,6 +21,15 @@ class AccountPageBloc extends Bloc<AccountPageEvent, AccountPageState> {
           )
           .catchError((err) => emit(UserInfoFail()));
     });
+    on<UpdateUserInfo>((event, emit) async {
+      emit(AccountPageLoading());
+
+      await UserDetailsController.updateUserDetails(event.id, event.fullName)
+          .then(
+            (value) => emit(UserUpdatedSucess()),
+          )
+          .catchError((err) => emit(UserUpdatedFail()));
+    });
     on<Signout>((event, emit) async {
       emit(AccountPageLoading());
 
