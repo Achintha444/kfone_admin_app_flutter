@@ -1,7 +1,9 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kfone_admin_app_flutter/util/model/session_token.dart';
+import 'package:kfone_admin_app_flutter/util/ui_util.dart';
 
 import '../../../../controller/login_controller/login_controller.dart';
 import '../../../../controller/secure_storage_controller/secure_storage_controller.dart';
@@ -17,33 +19,31 @@ class InitalPageBloc extends Bloc<InitalPageEvent, InitalPageState> {
 
         await LoginController.loginAction().then(
           (response) async {
-            try {
-              await SecureStorageController.storeToken(
-                response as AuthorizationTokenResponse,
-              )
-                  .then(
-                (value) => emit(
-                  SigninSuccess(
-                    sessionToken: SessionToken(
-                      accessToken: response.accessToken,
-                      idToken: response.idToken,
-                      accessTokenExpirationDateTime:
-                          response.accessTokenExpirationDateTime,
+            await SecureStorageController.storeToken(
+              response as AuthorizationTokenResponse,
+            )
+                .then(
+                  (value) => emit(
+                    SigninSuccess(
+                      sessionToken: SessionToken(
+                        accessToken: response.accessToken,
+                        idToken: response.idToken,
+                        accessTokenExpirationDateTime:
+                            response.accessTokenExpirationDateTime,
+                      ),
                     ),
-                  ),
-                ),
-              )
-                  .catchError(
-                (err) {
-                  emit(SigninFail());
-                },
-              );
-            } catch (e) {
-              emit(SigninFail());
-            }
+                  )
+                )
+                .catchError((err) => emit(SigninFail()));
           },
         ).catchError(
           (err) {
+            if (err is PlatformException) {
+              if (err.message == UiUtil.getInitialUnauthorizedMessage()) {
+                emit(InitialUnauthorized());
+                return;
+              }
+            }
             emit(SigninFail());
           },
         );
@@ -56,16 +56,19 @@ class InitalPageBloc extends Bloc<InitalPageEvent, InitalPageState> {
       final String? accessToken =
           await SecureStorageController.getAccessToken();
       final String? idToken = await SecureStorageController.getIdToken();
-      final String? accessTokenExpirationDateTimeString 
-        = await SecureStorageController.getAccessTokenExpirationDateTime();
+      final String? accessTokenExpirationDateTimeString =
+          await SecureStorageController.getAccessTokenExpirationDateTime();
 
-      if (accessToken != null && idToken != null && accessTokenExpirationDateTimeString != null) {
-        bool isAccessTokenExpired = await SecureStorageController.isAccessTokenExpired();
-        if(isAccessTokenExpired) {
+      if (accessToken != null &&
+          idToken != null &&
+          accessTokenExpirationDateTimeString != null) {
+        bool isAccessTokenExpired =
+            await SecureStorageController.isAccessTokenExpired();
+        if (isAccessTokenExpired) {
           await SecureStorageController.clearLocalStorage()
-            .then((value) => emit(Initial()))
-            .catchError((err) => emit(Initial()));
-          
+              .then((value) => emit(Initial()))
+              .catchError((err) => emit(Initial()));
+
           return;
         }
 
@@ -73,14 +76,13 @@ class InitalPageBloc extends Bloc<InitalPageEvent, InitalPageState> {
         emit(
           SigninSuccess(
             sessionToken: SessionToken(
-              accessToken: accessToken,
-              idToken: idToken,
-              accessTokenExpirationDateTime: DateTime.parse(accessTokenExpirationDateTimeString)
-            ),
+                accessToken: accessToken,
+                idToken: idToken,
+                accessTokenExpirationDateTime:
+                    DateTime.parse(accessTokenExpirationDateTimeString)),
           ),
         );
         return;
-
       }
 
       emit(Initial());

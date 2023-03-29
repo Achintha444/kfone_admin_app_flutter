@@ -7,6 +7,7 @@ import '../../../../util/ui_util.dart';
 import '../../../widgets/common/resizable_image.dart';
 import '../bloc/inital_page_bloc.dart';
 import '../widgets/signin_button.dart';
+import '../widgets/unauthorized_widget.dart';
 
 class InitialPage extends StatelessWidget {
   static const routeName = "/";
@@ -29,60 +30,81 @@ class InitialPage extends StatelessWidget {
             radius: 1,
           ),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Spacer(),
-            const ResizableImage(
-              height: 100,
-              fit: BoxFit.fitHeight,
-              imageLocation: 'assets/images/logo.png',
+        child: BlocProvider(
+          create: (context) => InitalPageBloc()
+            ..add(
+              InitialSignin(),
             ),
-            const SizedBox(height: 10),
-            const Text("Admininstrator Application"),
-            const Spacer(),
-            _buildBody(context),
-            const Spacer(),
-          ],
+          child: _buildBody(context),
         ),
       ),
     );
   }
 
-  BlocProvider<InitalPageBloc> _buildBody(BuildContext context) {
-    return BlocProvider(
-      create: (context) => InitalPageBloc()
-        ..add(
-          InitialSignin(),
-        ),
-      child: BlocListener<InitalPageBloc, InitalPageState>(
-        listener: (context, state) {
-          if (state is SigninFail) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              UiUtil.getSnackBar("Signin Failed"),
-            );
-          } else if (state is SigninSuccess) {
-            Navigator.pushNamed(
-              context,
-              HomePage.routeName,
-              arguments: HomePageArguments(state.sessionToken),
+  BlocListener<InitalPageBloc, InitalPageState> _buildBody(
+      BuildContext context) {
+    return BlocListener<InitalPageBloc, InitalPageState>(
+      listener: (context, state) {
+        if (state is InitialUnauthorized) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            UiUtil.getSnackBar("Unauthorized login attempt"), 
+          );
+        } 
+      },
+      child: BlocBuilder<InitalPageBloc, InitalPageState>(
+        builder: (context, state) {
+          if (state is InitialUnauthorized) {
+            return const UnauthorizedWidget();
+          } else {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Spacer(),
+                const ResizableImage(
+                  height: 100,
+                  fit: BoxFit.fitHeight,
+                  imageLocation: 'assets/images/logo.png',
+                ),
+                const SizedBox(height: 10),
+                const Text("Admininstrator Application"),
+                const Spacer(),
+                _buildSignInButton(context),
+                const Spacer(),
+              ],
             );
           }
         },
-        child: BlocBuilder<InitalPageBloc, InitalPageState>(
-          builder: (context, state) {
-            if (state is Initial) {
-              return const SigninButton();
-            } else if (state is Loading) {
-              return const CircularProgressIndicator();
-            } else if (state is SigninFail) {
-              return const SigninButton();
-            } else {
-              return const CircularProgressIndicator();
-            }
-          },
-        ),
+      ),
+    );
+  }
+
+  BlocListener<InitalPageBloc, InitalPageState> _buildSignInButton(
+      BuildContext context) {
+    return BlocListener<InitalPageBloc, InitalPageState>(
+      listener: (context, state) {
+        if (state is SigninFail) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            UiUtil.getSnackBar("Signin Failed"),
+          );
+        } else if (state is SigninSuccess) {
+          Navigator.pushNamed(
+            context,
+            HomePage.routeName,
+            arguments: HomePageArguments(state.sessionToken),
+          );
+        }
+      },
+      child: BlocBuilder<InitalPageBloc, InitalPageState>(
+        builder: (context, state) {
+          if (state is Initial || state is SigninFail) {
+            return const SigninButton();
+          } else if (state is Loading) {
+            return const CircularProgressIndicator();
+          } else {
+            return const CircularProgressIndicator();
+          }
+        },
       ),
     );
   }

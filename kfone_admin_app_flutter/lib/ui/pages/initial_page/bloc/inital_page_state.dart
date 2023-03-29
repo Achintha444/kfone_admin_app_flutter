@@ -21,3 +21,5 @@ class SigninSuccess extends InitalPageState {
 }
 
 class SigninFail extends InitalPageState {}
+
+class InitialUnauthorized extends InitalPageState {}

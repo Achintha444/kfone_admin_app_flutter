@@ -1,4 +1,5 @@
 import "dart:developer";
+
 import "package:flutter_appauth/flutter_appauth.dart";
 import "package:kfone_admin_app_flutter/controller/scopes_controller/scope_controller.dart";
 import "package:kfone_admin_app_flutter/util/model/session_token.dart";
@@ -35,9 +36,8 @@ class LoginController extends Controller {
       inspect(result);
 
       return result;
-    } catch (e, s) {
-      inspect("login error: $e - stack: $s");
-      throw Exception("Failed to login");
+    } catch (e) {
+      rethrow;
     }
   }
 

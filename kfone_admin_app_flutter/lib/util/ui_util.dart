@@ -3,6 +3,11 @@ import "package:flutter/material.dart";
 /// abstract class to have the util functions required for ui
 abstract class UiUtil {
 
+  /// get the initial unauthorized message
+  static String getInitialUnauthorizedMessage() {
+    return "Failed to authorize: access_denied: You are not authorized to login to this application.";
+  }
+
   /// get the screen height
   static double getMediaQueryHeight(context) {
     return MediaQuery.of(context).size.height;
