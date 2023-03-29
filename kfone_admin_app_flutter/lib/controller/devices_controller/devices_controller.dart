@@ -67,8 +67,6 @@ class DevicesController extends Controller {
       '$apiBaseUrl/devices/$deviceId',
     );
 
-    print(response.statusCode);
-
     if (response.statusCode == 204) {
       return true;
     } else {
