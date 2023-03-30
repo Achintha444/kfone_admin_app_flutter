@@ -22,19 +22,20 @@ class InitalPageBloc extends Bloc<InitalPageEvent, InitalPageState> {
             await SecureStorageController.storeToken(
               response as AuthorizationTokenResponse,
             )
-                .then(
-                  (value) => emit(
-                    SigninSuccess(
-                      sessionToken: SessionToken(
-                        accessToken: response.accessToken,
-                        idToken: response.idToken,
-                        accessTokenExpirationDateTime:
-                            response.accessTokenExpirationDateTime,
+                .then((value) => emit(
+                      SigninSuccess(
+                        sessionToken: SessionToken(
+                          accessToken: response.accessToken,
+                          idToken: response.idToken,
+                          accessTokenExpirationDateTime:
+                              response.accessTokenExpirationDateTime,
+                        ),
                       ),
-                    ),
-                  )
-                )
-                .catchError((err) => emit(SigninFail()));
+                    ))
+                .catchError((err) {
+                  print(err);
+              emit(SigninFail());
+            });
           },
         ).catchError(
           (err) {

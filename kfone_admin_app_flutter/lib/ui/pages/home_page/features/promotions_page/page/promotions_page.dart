@@ -26,7 +26,7 @@ class PromotionsPage extends StatelessWidget {
           return const Center(child: CircularProgressIndicator());
         } else if (state is GetPromotionsSucess) {
           return PromotionsTable(
-            promotions: state.promotions,
+            promotions: state.promotions.reversed.toList(),
           );
         } else if (state is PromotionPageUnauthorized) {
           return const UnauthorizedWidget();
