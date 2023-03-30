@@ -30,7 +30,7 @@ class LoginController extends Controller {
           redirectUrl,
           discoveryUrl: discoveryUrl,
           scopes: scopes,
-          preferEphemeralSession: true
+          preferEphemeralSession: true,
         ),
       );
 
