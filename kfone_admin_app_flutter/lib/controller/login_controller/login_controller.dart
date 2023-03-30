@@ -23,8 +23,6 @@ class LoginController extends Controller {
       // add the all the scopes that is related to other interfaces
       scopes.addAll( await ScopeController.getAllScopesOfInterfaces());
 
-      print(scopes);
-
       final AuthorizationTokenResponse? result =
           await _flutterAppAuth.authorizeAndExchangeCode(
         AuthorizationTokenRequest(
@@ -32,14 +30,14 @@ class LoginController extends Controller {
           redirectUrl,
           discoveryUrl: discoveryUrl,
           scopes: scopes,
+          preferEphemeralSession: true
         ),
       );
-      print(result);
+
       inspect(result);
 
       return result;
     } catch (e) {
-      print(e);
       rethrow;
     }
   }

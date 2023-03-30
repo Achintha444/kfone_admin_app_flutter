@@ -53,7 +53,6 @@ class InitialPage extends StatelessWidget {
       },
       child: BlocBuilder<InitalPageBloc, InitalPageState>(
         builder: (context, state) {
-          print(state);
           if (state is InitialUnauthorized) {
             return const UnauthorizedWidget();
           } else {

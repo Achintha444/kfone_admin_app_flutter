@@ -32,10 +32,7 @@ class InitalPageBloc extends Bloc<InitalPageEvent, InitalPageState> {
                         ),
                       ),
                     ))
-                .catchError((err) {
-                  print(err);
-              emit(SigninFail());
-            });
+                .catchError((err) => emit(SigninFail()));
           },
         ).catchError(
           (err) {
