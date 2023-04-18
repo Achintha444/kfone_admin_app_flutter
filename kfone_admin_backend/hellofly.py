@@ -22,7 +22,7 @@ ORG_NAME = config['ASGARDEO']['ORGANIZATION']
 CUSTOMER_GROUP_ID = config['ASGARDEO']['CUSTOMER_GROUP_ID']
 
 asgardeo_public_key = None
-JWKS_URL = f"https://api.asgardeo.io/t/{ORG_NAME}/oauth2/jwks"
+JWKS_URL = config['ASGARDEO']['JWKS_URI']
 AUD = config['ASGARDEO']['AUDIENCE']
 ADMIN_CLIENT_ID = config['ASGARDEO']['ADMIN_CLIENT_ID']
 ADMIN_CLIENT_SECRET = os.getenv("ADMIN_CLIENT_SECRET")
@@ -149,7 +149,8 @@ def requires_auth(f):
             public_key = get_public_key(token)
             # Decode JWT access token and verify signature using the public key
             jwt.decode(token, public_key, algorithms=['RS256'], audience=AUD, verify=True)
-        except:
+        except Exception as e:
+            print(e)
             abort(401)  # Unauthorized
 
         return f(*args, **kwargs)
